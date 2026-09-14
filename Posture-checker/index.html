@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Femtech 65+ | Surveillance Mirror</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- p5.js core library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <!-- ml5.js library til kropssporing (v1 stabil release) -->
+    <script src="https://cdn.jsdelivr.net/npm/ml5@1/dist/ml5.min.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <!-- Advarselsbanner hvis siden åbnes over file:// -->
+        <div id="protocol-warning" class="banner hidden">
+            ⚠️ <strong>Bemærk:</strong> Kameraadgang blokeres ofte af browsere på lokale fil-stier (<code>file:///</code>). Kør projektet via en lokal server (f.eks. <code>python3 -m http.server 8000</code>) eller Live Server, hvis kameraet ikke åbner.
+        </div>
+
+        <div id="canvas-holder">
+            <!-- p5 canvas indsættes her -->
+        </div>
+
+        <div id="status-panel">
+            <div class="panel-header">
+                <h1>AUTONOMY SURVEILLANCE FEED</h1>
+                <span id="rec-badge" class="badge">STANDBY</span>
+            </div>
+
+            <p id="system-status">Systemstatus: Indlæser AI-model og initialiserer kamera...</p>
+
+            <div id="score-container">
+                <div class="score-label-row">
+                    <span>Postural Score:</span>
+                    <span id="posture-val">--</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="score-bar" class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div id="metrics">
+                <p>Status: <span id="alert-val">Afventer krop...</span></p>
+                <p>Skulderhældning: <span id="tilt-val">--</span></p>
+                <p>Telemetry: <span id="fps-val">-- FPS</span> | Node: 01-ALPHA</p>
+            </div>
+
+            <div id="camera-controls">
+                <button id="btn-start-camera" type="button" class="cyber-btn">
+                    📷 Start / Tillad Kamera
+                </button>
+                <button id="btn-toggle-mirror" type="button" class="cyber-btn secondary">
+                    🪞 Spejlvend: TIL
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="sketch.js"></script>
+</body>
+
+</html>
