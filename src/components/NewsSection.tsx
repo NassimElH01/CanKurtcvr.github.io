@@ -1,147 +1,480 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { RefreshCw, ExternalLink } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  RefreshCw, 
+  ExternalLink, 
+  MessageSquare, 
+  Flame, 
+  Globe, 
+  Search, 
+  Sparkles, 
+  Cpu, 
+  Shield, 
+  Cloud, 
+  Code,
+  Clock,
+  AlertCircle
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface Article {
+interface NewsItem {
+  id: string;
   title: string;
-  description: string;
-  urlToImage: string;
   url: string;
-  source: string;
+  hnUrl: string;
+  domain: string;
+  author: string;
+  points: number;
+  commentsCount: number;
+  createdAt: string;
+  category: string;
 }
 
-const demoNews: Article[] = [
+type NewsCategory = "trending" | "ai" | "web" | "cloud" | "security";
+
+interface CategoryMeta {
+  id: NewsCategory;
+  label: string;
+  icon: typeof Sparkles;
+  query: string;
+  gradient: string;
+  textColor: string;
+}
+
+const CATEGORIES: CategoryMeta[] = [
+  { 
+    id: "trending", 
+    label: "Trending Tech", 
+    icon: Flame, 
+    query: "tags=front_page", 
+    gradient: "from-amber-500/20 via-orange-500/10 to-transparent",
+    textColor: "text-amber-500"
+  },
+  { 
+    id: "ai", 
+    label: "AI & Maskinlæring", 
+    icon: Sparkles, 
+    query: "query=AI+LLM+neural&tags=story", 
+    gradient: "from-purple-500/20 via-indigo-500/10 to-transparent",
+    textColor: "text-purple-500"
+  },
+  { 
+    id: "web", 
+    label: "Software & Web", 
+    icon: Code, 
+    query: "query=typescript+react+architecture&tags=story", 
+    gradient: "from-blue-500/20 via-cyan-500/10 to-transparent",
+    textColor: "text-blue-500"
+  },
+  { 
+    id: "cloud", 
+    label: "Cloud & Digitalisering", 
+    icon: Cloud, 
+    query: "query=cloud+infrastructure+devops&tags=story", 
+    gradient: "from-emerald-500/20 via-teal-500/10 to-transparent",
+    textColor: "text-emerald-500"
+  },
+  { 
+    id: "security", 
+    label: "Cybersikkerhed", 
+    icon: Shield, 
+    query: "query=security+vulnerability+privacy&tags=story", 
+    gradient: "from-rose-500/20 via-pink-500/10 to-transparent",
+    textColor: "text-rose-500"
+  },
+];
+
+// Curated robust fallback articles in case offline or rate-limited
+const FALLBACK_ARTICLES: NewsItem[] = [
   {
-    title: "AI og LLM: Gennembrud i ræsonnering og softwarearkitektur",
-    description: "Nye modeller demonstrerer stærke evner inden for autonom kodefejlretning, arkitekturdesign og matematisk problemløsning.",
-    urlToImage: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=800&q=80",
-    url: "https://news.ycombinator.com/",
-    source: "Hacker News / Tech Community"
+    id: "fb-1",
+    title: "DeepSeek and Open-Weight LLMs: How Distributed Reasoning Is Shifting AI Economics",
+    url: "https://news.ycombinator.com/item?id=42700001",
+    hnUrl: "https://news.ycombinator.com/item?id=42700001",
+    domain: "arxiv.org",
+    author: "quant_researcher",
+    points: 428,
+    commentsCount: 184,
+    createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    category: "ai"
   },
   {
-    title: "Fremtidens IT-infrastruktur og Cloud Transformation",
-    description: "Virksomheder accelererer overgangen til serverless, edge computing og hybride cloud-miljøer for øget modstandsdygtighed.",
-    urlToImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
-    url: "https://www.technologyreview.com/",
-    source: "MIT Technology Review"
+    id: "fb-2",
+    title: "Modern TypeScript Patterns for Resilient State Machines and Frontend Engines",
+    url: "https://news.ycombinator.com/item?id=42700002",
+    hnUrl: "https://news.ycombinator.com/item?id=42700002",
+    domain: "github.blog",
+    author: "frontend_lead",
+    points: 312,
+    commentsCount: 92,
+    createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+    category: "web"
   },
   {
-    title: "Rumfart og satellitkommunikation i eksplosiv udvikling",
-    description: "Næste generations opsendelser udvider globale bredbåndsnetværk og muliggør direkte satellit-til-mobil kommunikation.",
-    urlToImage: "https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=800&q=80",
-    url: "https://arstechnica.com/space/",
-    source: "Ars Technica"
+    id: "fb-3",
+    title: "EU AI Act Compliance & Cloud Infrastructure: Navigating Sovereign Data Centers",
+    url: "https://news.ycombinator.com/item?id=42700003",
+    hnUrl: "https://news.ycombinator.com/item?id=42700003",
+    domain: "eff.org",
+    author: "tech_policy",
+    points: 254,
+    commentsCount: 68,
+    createdAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+    category: "cloud"
   },
   {
-    title: "Cybersikkerhed og digital suverænitet i EU",
-    description: "Stigende fokus på NIS2, GDPR og beskyttelse af kritisk samfundsinfrastruktur mod avancerede cybertrusler.",
-    urlToImage: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
-    url: "https://www.eff.org/",
-    source: "Electronic Frontier Foundation"
+    id: "fb-4",
+    title: "Post-Quantum Cryptography Migrations: Lessons from Financial Core Banking Systems",
+    url: "https://news.ycombinator.com/item?id=42700004",
+    hnUrl: "https://news.ycombinator.com/item?id=42700004",
+    domain: "acm.org",
+    author: "crypto_analyst",
+    points: 389,
+    commentsCount: 115,
+    createdAt: new Date(Date.now() - 1000 * 60 * 240).toISOString(),
+    category: "security"
   },
   {
-    title: "Grøn omstilling og energieffektiv computing",
-    description: "Datacentre investerer massivt i vedvarende energi, direkte vandkøling og chiparkitekturer med minimalt energiforbrug.",
-    urlToImage: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80",
-    url: "https://www.theverge.com/tech",
-    source: "The Verge Tech"
+    id: "fb-5",
+    title: "High-Performance WebGL and WebGPU in Browser-First Simulations",
+    url: "https://news.ycombinator.com/item?id=42700005",
+    hnUrl: "https://news.ycombinator.com/item?id=42700005",
+    domain: "webgl.org",
+    author: "graphics_dev",
+    points: 198,
+    commentsCount: 45,
+    createdAt: new Date(Date.now() - 1000 * 60 * 300).toISOString(),
+    category: "web"
   },
   {
-    title: "Kvanteteknologi: Fra laboratoriet til praktisk kryptering",
-    description: "Forskere opnår nye milepæle inden for post-kvante-kryptografi og simulation af komplekse molekyler.",
-    urlToImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=80",
-    url: "https://www.wired.com/",
-    source: "Wired"
+    id: "fb-6",
+    title: "Automating Complex Financial Reconciliation: Data Sanitization and Quality Models",
+    url: "https://news.ycombinator.com/item?id=42700006",
+    hnUrl: "https://news.ycombinator.com/item?id=42700006",
+    domain: "hbr.org",
+    author: "data_consultant",
+    points: 275,
+    commentsCount: 83,
+    createdAt: new Date(Date.now() - 1000 * 60 * 360).toISOString(),
+    category: "trending"
   }
 ];
 
-const NewsSection = () => {
-  const [news, setNews] = useState<Article[]>(demoNews);
-  const [loading, setLoading] = useState(false);
+function formatTimeAgo(dateString: string): string {
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffSec < 60) return "Lige nu";
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin} min. siden`;
+    const diffHours = Math.floor(diffMin / 60);
+    if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? "time" : "timer"} siden`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return "I går";
+    if (diffDays < 7) return `${diffDays} dage siden`;
+    return date.toLocaleDateString("da-DK", { day: "numeric", month: "short" });
+  } catch {
+    return "For nylig";
+  }
+}
 
-  const refreshNews = () => {
+function extractDomain(url: string): string {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname.replace(/^www\./, "");
+  } catch {
+    return "news.ycombinator.com";
+  }
+}
+
+export default function NewsSection() {
+  const [selectedCategory, setSelectedCategory] = useState<NewsCategory>("trending");
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+
+  const activeCategoryMeta = useMemo(() => {
+    return CATEGORIES.find((c) => c.id === selectedCategory) || CATEGORIES[0];
+  }, [selectedCategory]);
+
+  const fetchLiveNews = useCallback(async (cat: NewsCategory) => {
     setLoading(true);
-    // Shuffle the demo news
-    setTimeout(() => {
-      setNews([...demoNews].sort(() => Math.random() - 0.5));
+    const meta = CATEGORIES.find((c) => c.id === cat) || CATEGORIES[0];
+    const url = `https://hn.algolia.com/api/v1/search?${meta.query}&hitsPerPage=12`;
+
+    try {
+      const response = await fetch(url, {
+        headers: { Accept: "application/json" }
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      const hits = data.hits || [];
+
+      if (hits.length > 0) {
+        const parsed: NewsItem[] = hits
+          .filter((h: any) => h.title && h.title.trim().length > 0)
+          .map((h: any) => {
+            const articleUrl = h.url || `https://news.ycombinator.com/item?id=${h.objectID}`;
+            return {
+              id: h.objectID || String(Math.random()),
+              title: h.title,
+              url: articleUrl,
+              hnUrl: `https://news.ycombinator.com/item?id=${h.objectID}`,
+              domain: extractDomain(articleUrl),
+              author: h.author || "anonym",
+              points: h.points || 0,
+              commentsCount: h.num_comments || 0,
+              createdAt: h.created_at || new Date().toISOString(),
+              category: cat,
+            };
+          });
+
+        setNews(parsed);
+        setIsLive(true);
+      } else {
+        // Fallback to sample data
+        setNews(FALLBACK_ARTICLES);
+        setIsLive(false);
+      }
+    } catch (err) {
+      console.warn("Live news fetch failed, falling back to curated feed:", err);
+      setNews(FALLBACK_ARTICLES);
+      setIsLive(false);
+    } finally {
       setLoading(false);
-    }, 800);
-  };
+      setLastRefreshed(new Date());
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLiveNews(selectedCategory);
+  }, [selectedCategory, fetchLiveNews]);
+
+  // Client-side search filtering
+  const filteredNews = useMemo(() => {
+    if (!searchQuery.trim()) return news;
+    const q = searchQuery.toLowerCase();
+    return news.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.domain.toLowerCase().includes(q) ||
+        item.author.toLowerCase().includes(q)
+    );
+  }, [news, searchQuery]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div className="flex items-center justify-between">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
         <div>
-          <h2 className="text-2xl font-display font-bold text-foreground">Teknologi & Nyheder</h2>
-          <p className="text-sm text-muted-foreground">Aktuelle overskrifter og emner fra tech-verdenen</p>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-display font-bold text-foreground">
+              Teknologi & Tech-Nyheder
+            </h2>
+            {isLive ? (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Feed
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                <AlertCircle className="size-3" />
+                Kurateret
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Realtids overskrifter og dybdegående artikler om digitalisering, AI og softwarearkitektur.
+          </p>
         </div>
-        <Button
-          onClick={refreshNews}
-          disabled={loading}
-          variant="outline"
-          size="sm"
-          className="gap-2"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          Opdater
-        </Button>
+
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => fetchLiveNews(selectedCategory)}
+            disabled={loading}
+            variant="outline"
+            size="sm"
+            className="gap-2 rounded-full border-border/80 hover:bg-muted font-medium text-xs sm:text-sm"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-primary ${loading ? "animate-spin" : ""}`} />
+            <span>Opdater</span>
+          </Button>
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {news.map((article, index) => (
-          <motion.article
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.08 }}
-            className="group bg-card rounded-xl overflow-hidden border border-border shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
-          >
-            <div>
-              <div className="aspect-video overflow-hidden relative">
-                <img
-                  src={article.urlToImage}
-                  alt={article.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    e.currentTarget.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80";
-                  }}
-                />
-                <div className="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-xs text-white text-[10px] font-medium px-2 py-0.5 rounded-sm">
-                  {article.source}
-                </div>
-              </div>
-              
-              <div className="p-5 space-y-2">
-                <h3 className="font-display font-semibold text-foreground line-clamp-2 group-hover:text-accent transition-colors">
-                  {article.title}
-                </h3>
-                <p className="text-xs md:text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                  {article.description}
-                </p>
-              </div>
-            </div>
-
-            <div className="px-5 pb-5 pt-1">
-              <a
-                href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent/80 transition-colors"
+      {/* Category Pills & Search Filter */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        {/* Categories */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const active = selectedCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`press-pop inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  active
+                    ? "bg-primary text-primary-foreground shadow-xs scale-105"
+                    : "bg-muted/70 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/40"
+                }`}
               >
-                Læs artiklen hos kilden
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
+                <Icon className={`size-3.5 ${active ? "text-primary-foreground" : cat.textColor}`} />
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Live Search Input */}
+        <div className="relative w-full md:w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Filtrer overskrifter..."
+            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-full border border-border/80 bg-background/80 placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+      </div>
+
+      {/* Content Grid */}
+      {loading ? (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-border/60 bg-card p-5 space-y-3 animate-pulse"
+            >
+              <div className="flex justify-between items-center">
+                <div className="h-4 w-24 bg-muted rounded" />
+                <div className="h-4 w-16 bg-muted rounded" />
+              </div>
+              <div className="h-5 w-full bg-muted rounded" />
+              <div className="h-5 w-4/5 bg-muted rounded" />
+              <div className="pt-4 flex justify-between items-center">
+                <div className="h-3 w-16 bg-muted rounded" />
+                <div className="h-3 w-20 bg-muted rounded" />
+              </div>
             </div>
-          </motion.article>
-        ))}
+          ))}
+        </div>
+      ) : filteredNews.length === 0 ? (
+        <div className="text-center py-12 rounded-xl border border-dashed border-border bg-card/40 space-y-2">
+          <p className="text-sm font-semibold text-foreground">Ingen artikler fundet</p>
+          <p className="text-xs text-muted-foreground">
+            Ingen overskrifter matcher søgningen "{searchQuery}".
+          </p>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setSearchQuery("")}
+            className="text-xs text-primary"
+          >
+            Nulstil søgning
+          </Button>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <AnimatePresence mode="popLayout">
+            {filteredNews.map((article, index) => {
+              const CategoryIcon = activeCategoryMeta.icon;
+              return (
+                <motion.article
+                  key={article.id}
+                  layout
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.2, delay: index * 0.03 }}
+                  className="group relative flex flex-col justify-between rounded-xl border border-border/80 bg-card p-5 shadow-xs hover:shadow-md hover:border-primary/40 transition-all"
+                >
+                  <div className="space-y-3">
+                    {/* Top row: Domain & Time */}
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                      <span className="inline-flex items-center gap-1 font-medium bg-muted/60 px-2 py-0.5 rounded-md border border-border/40 text-foreground/80 truncate max-w-[140px]">
+                        <Globe className="size-3 text-muted-foreground shrink-0" />
+                        <span className="truncate">{article.domain}</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1 font-mono text-muted-foreground shrink-0">
+                        <Clock className="size-3" />
+                        {formatTimeAgo(article.createdAt)}
+                      </span>
+                    </div>
+
+                    {/* Headline */}
+                    <h3 className="font-display font-semibold text-sm sm:text-base text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-3">
+                      <a
+                        href={article.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline focus:outline-hidden"
+                      >
+                        {article.title}
+                      </a>
+                    </h3>
+                  </div>
+
+                  {/* Bottom Stats & Links */}
+                  <div className="pt-4 mt-2 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
+                    <div className="flex items-center gap-3">
+                      {article.points > 0 && (
+                        <span className="inline-flex items-center gap-1 font-mono font-semibold text-amber-500">
+                          <Flame className="size-3.5" />
+                          {article.points}
+                        </span>
+                      )}
+                      <a
+                        href={article.hnUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 hover:text-foreground transition-colors font-mono"
+                        title="Se debat og kommentarer på Hacker News"
+                      >
+                        <MessageSquare className="size-3.5" />
+                        <span>{article.commentsCount}</span>
+                      </a>
+                    </div>
+
+                    <a
+                      href={article.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-semibold text-primary hover:text-primary/80 transition-colors text-xs"
+                    >
+                      <span>Læs</span>
+                      <ExternalLink className="size-3" />
+                    </a>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Footer Info */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-2 pt-2 text-[11px] text-muted-foreground/80 border-t border-border/40">
+        <p>
+          Data leveret i realtid via Hacker News API · Filtreret efter teknologi og forretnings-IT.
+        </p>
+        <p className="font-mono">
+          Sidst synkroniseret: {lastRefreshed.toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" })}
+        </p>
       </div>
     </motion.div>
   );
-};
-
-export default NewsSection;
+}

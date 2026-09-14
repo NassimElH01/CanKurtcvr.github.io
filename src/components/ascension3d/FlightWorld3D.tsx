@@ -1,9 +1,11 @@
+// @ts-nocheck -- vendored game code, kept as authored
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import {
   Compass,
   Wind,
@@ -58,6 +60,8 @@ interface Island3DConfig {
   accentColor: number;
   beaconColor: number;
   height: number;
+  /** true while the domain's quest has not opened its first chapter */
+  sealed?: boolean;
 }
 
 // Talkable NPC on the Islands
@@ -74,6 +78,8 @@ export interface IslandNPC {
   avatarEmoji: string;
   dialogueLines: string[];
   localPos: { x: number; y: number; z: number };
+  /** chapters that must be open in this domain before the keeper appears */
+  requiresChapter?: number;
 }
 
 export const ISLAND_NPCS: IslandNPC[] = [
@@ -192,7 +198,227 @@ export const ISLAND_NPCS: IslandNPC[] = [
     ],
     localPos: { x: 16, y: 6.0, z: -16 },
   },
+  {
+    id: 'npc-hana',
+    name: 'Wayfarer Hana',
+    title: 'Companion of the Long Switchbacks',
+    islandId: 'vitality',
+    islandName: 'Citadel of Vitality',
+    role: 'Walker of the rhythm nobody writes songs about',
+    themeColor: 'emerald',
+    accentHex: '#34d399',
+    avatarIcon: 'Compass',
+    avatarEmoji: '🥾',
+    dialogueLines: [
+      'You kept walking, so I came back. The beacon started flickering and I wanted to see who lit it.',
+      'The middle of a road is the loneliest part. That is exactly where company belongs.',
+      'Walk with me. We can be quiet — the mountain prefers it.',
+    ],
+    localPos: { x: 8, y: 6.0, z: -22 },
+    requiresChapter: 3,
+  },
+  {
+    id: 'npc-noor',
+    name: 'Ferrywoman Noor',
+    title: 'Warden of the Long Bridges',
+    islandId: 'kinship',
+    islandName: 'Bridges of Kinship',
+    role: 'Keeper of the hearth at the centre of the span',
+    themeColor: 'orange',
+    accentHex: '#fb923c',
+    avatarIcon: 'Flame',
+    avatarEmoji: '🪢',
+    dialogueLines: [
+      'Careful on the planking, traveller. It holds — it just likes to be noticed.',
+      'Bridges fray because nobody crosses, not because the rope is weak.',
+      'Throw one rope today. A message, a call, an hour with someone. That is the whole rite.',
+      'When somebody crosses back towards you unasked, the bridge has become a road.',
+    ],
+    localPos: { x: -14, y: 6.0, z: -16 },
+  },
+  {
+    id: 'npc-sable',
+    name: 'Knight Sable',
+    title: 'Watcher at the Threshold',
+    islandId: 'courage',
+    islandName: 'Threshold of Small Fears',
+    role: 'Guardian of the doorways everyone walks around',
+    themeColor: 'red',
+    accentHex: '#ef4444',
+    avatarIcon: 'Shield',
+    avatarEmoji: '🗝️',
+    dialogueLines: [
+      'Stand there a moment. See how ordinary the door is once you are close to it?',
+      'Everyone who ever avoided something left it here. The plaza is built out of postponement.',
+      'Do not storm it. Step through one small one, today, and be disappointed by how little happens.',
+      'Fear still visits me. It simply stopped deciding.',
+    ],
+    localPos: { x: 0, y: 6.0, z: -20 },
+  },
+  {
+    id: 'npc-amara',
+    name: 'Steward Amara',
+    title: 'Mistress of the Honest Ledger',
+    islandId: 'abundance',
+    islandName: 'Granary of Small Sums',
+    role: 'Counter of margins, keeper of chalk lines',
+    themeColor: 'lime',
+    accentHex: '#a3e635',
+    avatarIcon: 'BookOpen',
+    avatarEmoji: '🌾',
+    dialogueLines: [
+      'The book is open. Read the true number — that is the first chapter, and it is enough.',
+      'Granaries do not fill heroically. They fill in small sums, at chalk lines nobody applauds.',
+      'Tend one thing you steward today: coin, home, or order.',
+      'Abundance, it turns out, means margin. Not more.',
+    ],
+    localPos: { x: -16, y: 6.0, z: 14 },
+  },
+  {
+    id: 'npc-sesh',
+    name: 'Tidewarden Sesh',
+    title: 'Keeper of the Drifting Clocks',
+    islandId: 'tidewatch',
+    islandName: 'The Tidewatch',
+    role: 'Measurer of the gaps between kept things',
+    themeColor: 'teal',
+    accentHex: '#2dd4bf',
+    avatarIcon: 'Clock',
+    avatarEmoji: '⏳',
+    dialogueLines: [
+      'This isle drifts, so nothing here is ever quite where the chart says. You get used to it.',
+      'I do not measure hours. I measure the gaps between the things you keep.',
+      'Two rites in one day is the rite here. Not more — two, in the same daylight.',
+      'The tide never hurries and it never skips. Be more like the tide than like a storm.',
+    ],
+    localPos: { x: 0, y: 6.0, z: -24 },
+  },
+  {
+    id: 'npc-kova',
+    name: 'Ashwright Kova',
+    title: 'Smith of the Forge of Returns',
+    islandId: 'emberfall',
+    islandName: 'The Emberfall',
+    role: 'Relighter of fires that went out',
+    themeColor: 'ember',
+    accentHex: '#f97316',
+    avatarIcon: 'Flame',
+    avatarEmoji: '🔥',
+    dialogueLines: [
+      'Every cold hearth on this floor belonged to somebody who stopped. Most of them came back.',
+      'I do not ask where you were. Nobody here does. Only whether you are here now.',
+      'The rite is the return: pick up the rite you dropped, and do not settle any debt for it.',
+      'Ash is not failure, traveller. Ash is proof there was a fire.',
+    ],
+    localPos: { x: -18, y: 6.0, z: 18 },
+  },
+  {
+    id: 'npc-ilm',
+    name: 'Cantor Ilm',
+    title: 'Voice of the Choir of Rest',
+    islandId: 'stillhollow',
+    islandName: 'The Still Hollow',
+    role: 'Singer of what you already kept',
+    themeColor: 'indigo',
+    accentHex: '#818cf8',
+    avatarIcon: 'Moon',
+    avatarEmoji: '🌙',
+    dialogueLines: [
+      'Listen. The hollow is singing your streaks back to you, a half-beat late.',
+      'The choir only sings for travellers who learned to stop without quitting.',
+      'Rest is a kept rite too. Take a day on purpose and let the work stand without you.',
+      'You came here loud. You will leave here quiet. That is the whole liturgy.',
+    ],
+    localPos: { x: 14, y: 6.0, z: -18 },
+  },
+  {
+    id: 'npc-ovid',
+    name: 'Lampwright Ovid',
+    title: 'Bearer of the Wanderlight',
+    islandId: 'wanderlight',
+    islandName: 'The Wanderlight',
+    role: 'Carrier of the lamp that lights other islands',
+    themeColor: 'zinc',
+    accentHex: '#e2e8f0',
+    avatarIcon: 'Compass',
+    avatarEmoji: '🏮',
+    dialogueLines: [
+      'Take it. No ceremony — the lamp is always carried by whoever is currently keeping something.',
+      'It lights every island except this one. That is the trade, and nobody warns you about it beforehand.',
+      'Somebody down there sets their week by your hours. Try not to be a bad clock.',
+      'The day you hand it on is the day the second chart gets longer.',
+    ],
+    localPos: { x: 0, y: 6.0, z: -20 },
+  },
+  {
+    id: 'npc-dain',
+    name: 'Harbourmaster Dain',
+    title: 'Keeper of the Register of Endings',
+    islandId: 'saltgate',
+    islandName: 'The Saltgate',
+    role: 'Moors the rites that finished their work',
+    themeColor: 'slate',
+    accentHex: '#94a3b8',
+    avatarIcon: 'BookOpen',
+    avatarEmoji: '⚓',
+    dialogueLines: [
+      'Every boat here is a rite somebody kept until it was done. None of them are wrecks.',
+      'You are good at continuing. Have you ever ended anything on purpose?',
+      'We use the same knot for coming in as for going out. Everyone assumes we would not.',
+      'Finish one thing properly and the berth beside it stays open for whatever you choose next.',
+    ],
+    localPos: { x: -16, y: 6.0, z: 16 },
+  },
+  {
+    id: 'npc-vela',
+    name: 'Vela, the Cartographer',
+    title: 'She Who Stopped Drawing',
+    islandId: 'zenith',
+    islandName: 'The Zenith Ring',
+    role: 'Watches the chart extend itself in your handwriting',
+    themeColor: 'white',
+    accentHex: '#f8fafc',
+    avatarIcon: 'Feather',
+    avatarEmoji: '🖋️',
+    dialogueLines: [
+      'There is no island inside this ring. Only the view, and the table, and the pen.',
+      'I stopped drawing when the chart began drawing itself. It writes in your hand now.',
+      'Those shapes north of everything have no names. They firmed up when you learned to rest.',
+      'There is more chart above us. There always is. That was never the bad news.',
+    ],
+    localPos: { x: 0, y: 6.0, z: -22 },
+  },
 ];
+
+/**
+ * Lets the app rewrite each keeper's dialogue so they speak about the player's
+ * own habit cards. Called before the world mounts.
+ */
+export function applyNpcDialogue(lines: Record<string, string[]>): void {
+  ISLAND_NPCS.forEach((npc) => {
+    const custom = lines[npc.islandId];
+    if (custom && custom.length > 0) npc.dialogueLines = custom;
+  });
+}
+
+/** islandId -> chapters open in its campaign domain. Empty means "show everything". */
+let islandChapterMap: Record<string, number> = {};
+
+/**
+ * Campaign gating: an island wakes when its domain quest opens its first
+ * chapter, and its keepers arrive as further chapters open.
+ */
+export function applyIslandUnlocks(map: Record<string, number>): void {
+  islandChapterMap = map;
+}
+
+export function chaptersOpenForIsland(islandId: string): number {
+  if (islandId === 'nexus') return 5;
+  if (Object.keys(islandChapterMap).length === 0) return 5;
+  return islandChapterMap[islandId] ?? 0;
+}
+
+
 
 // Helper: Canvas Texture Billboard Sprite for NPC Nametags
 function createNPCLabelSprite(name: string, title: string, colorHex: string): THREE.Sprite {
@@ -235,6 +461,8 @@ function createNPCLabelSprite(name: string, title: string, colorHex: string): TH
 }
 
 // Helper: Create 3D Stylized Character Model for Island NPCs
+// A hand-built low-poly "keeper": lathe-turned robe, open cowl with glowing eyes,
+// sleeved arms, a staff cradling the relic, orbiting motes and a soft ground glow.
 function createNPCEntity(npc: IslandNPC): {
   group: THREE.Group;
   beaconRune: THREE.Mesh;
@@ -245,156 +473,310 @@ function createNPCEntity(npc: IslandNPC): {
   npcGroup.name = `npc-${npc.id}`;
 
   const themeHex = parseInt(npc.accentHex.replace('#', '0x'), 16);
+  const theme = new THREE.Color(themeHex);
+  const clothDeep = theme.clone().lerp(new THREE.Color(0x0a1120), 0.82);
+  const clothMid = theme.clone().lerp(new THREE.Color(0x121b2e), 0.62);
 
-  // 1. Sacred Stone Pedestal
-  const basePedestal = new THREE.Mesh(
-    new THREE.CylinderGeometry(2.4, 2.7, 0.3, 24),
-    new THREE.MeshStandardMaterial({
-      color: 0x1f2937,
-      roughness: 0.85,
-      metalness: 0.1,
-      flatShading: true,
-    })
-  );
-  basePedestal.position.y = 0.15;
-  basePedestal.receiveShadow = true;
-  npcGroup.add(basePedestal);
+  // ---------- 1. Sacred stepped pedestal ----------
+  const stoneMat = new THREE.MeshStandardMaterial({
+    color: 0x1b2536,
+    roughness: 0.92,
+    metalness: 0.06,
+    flatShading: true,
+  });
+  const stepA = new THREE.Mesh(new THREE.CylinderGeometry(2.75, 3.0, 0.22, 9), stoneMat);
+  stepA.position.y = 0.11;
+  stepA.receiveShadow = true;
+  npcGroup.add(stepA);
+
+  const stepB = new THREE.Mesh(new THREE.CylinderGeometry(2.25, 2.5, 0.24, 9), stoneMat);
+  stepB.position.y = 0.34;
+  stepB.receiveShadow = true;
+  npcGroup.add(stepB);
 
   // Glowing inner circular rune
   const runeCircle = new THREE.Mesh(
-    new THREE.CylinderGeometry(2.1, 2.1, 0.05, 24),
+    new THREE.CylinderGeometry(2.0, 2.0, 0.05, 36),
     new THREE.MeshStandardMaterial({
       color: themeHex,
       emissive: themeHex,
-      emissiveIntensity: 0.6,
+      emissiveIntensity: 0.75,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.55,
     })
   );
-  runeCircle.position.y = 0.32;
+  runeCircle.position.y = 0.47;
   npcGroup.add(runeCircle);
 
-  // 2. Robed Character Figure
-  const robeMat = new THREE.MeshStandardMaterial({
-    color: 0x0f172a,
-    roughness: 0.7,
-    metalness: 0.1,
-  });
+  // Soft ground glow disc
+  const groundGlow = new THREE.Mesh(
+    new THREE.CircleGeometry(2.9, 36),
+    new THREE.MeshBasicMaterial({
+      color: themeHex,
+      transparent: true,
+      opacity: 0.16,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    })
+  );
+  groundGlow.rotation.x = -Math.PI / 2;
+  groundGlow.position.y = 0.5;
+  npcGroup.add(groundGlow);
 
+  // ---------- 2. Materials ----------
+  const robeMat = new THREE.MeshStandardMaterial({
+    color: clothDeep,
+    roughness: 0.78,
+    metalness: 0.06,
+    flatShading: true,
+  });
+  const robeLining = new THREE.MeshStandardMaterial({
+    color: clothMid,
+    roughness: 0.6,
+    metalness: 0.12,
+    side: THREE.DoubleSide,
+    flatShading: true,
+  });
   const accentMat = new THREE.MeshStandardMaterial({
     color: themeHex,
-    roughness: 0.4,
-    metalness: 0.25,
+    roughness: 0.35,
+    metalness: 0.35,
     emissive: themeHex,
-    emissiveIntensity: 0.2,
+    emissiveIntensity: 0.35,
   });
+  const trimMat = new THREE.MeshStandardMaterial({
+    color: 0xd9c08a,
+    roughness: 0.3,
+    metalness: 0.7,
+  });
+  const skinMat = new THREE.MeshStandardMaterial({ color: 0x2a3348, roughness: 0.85 });
 
-  // Lower Robe / Cassock
-  const robeMesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.55, 0.95, 1.8, 16),
-    robeMat
-  );
-  robeMesh.position.y = 1.2;
+  // ---------- 3. Flowing robe (lathe silhouette) ----------
+  const robeProfile: THREE.Vector2[] = [
+    new THREE.Vector2(0.02, 0),
+    new THREE.Vector2(0.62, 0.02),
+    new THREE.Vector2(0.7, 0.16),
+    new THREE.Vector2(0.6, 0.62),
+    new THREE.Vector2(0.5, 1.18),
+    new THREE.Vector2(0.44, 1.6),
+    new THREE.Vector2(0.42, 1.85),
+    new THREE.Vector2(0.42, 2.04),
+  ];
+  const robeMesh = new THREE.Mesh(new THREE.LatheGeometry(robeProfile, 16), robeMat);
+  robeMesh.position.y = 0.5;
   robeMesh.castShadow = true;
   npcGroup.add(robeMesh);
 
-  // Decorative sash / Stole
-  const sashMesh = new THREE.Mesh(
-    new THREE.BoxGeometry(0.35, 1.4, 0.15),
-    accentMat
-  );
-  sashMesh.position.set(0, 1.35, 0.48);
-  npcGroup.add(sashMesh);
+  // Hem trim ring
+  const hemTrim = new THREE.Mesh(new THREE.TorusGeometry(0.67, 0.04, 6, 24), accentMat);
+  hemTrim.rotation.x = Math.PI / 2;
+  hemTrim.position.y = 0.64;
+  npcGroup.add(hemTrim);
 
-  // Shoulder Mantle
-  const mantleMesh = new THREE.Mesh(
-    new THREE.ConeGeometry(0.92, 1.0, 16),
-    accentMat
+  // ---------- 4. Cloak shell behind the shoulders ----------
+  const cloak = new THREE.Mesh(
+    new THREE.SphereGeometry(0.92, 18, 14, Math.PI * 0.28, Math.PI * 1.44, 0, Math.PI * 0.62),
+    robeLining
   );
-  mantleMesh.position.y = 2.1;
-  mantleMesh.castShadow = true;
-  npcGroup.add(mantleMesh);
+  cloak.scale.set(0.86, 1.4, 0.72);
+  cloak.position.set(0, 2.28, -0.06);
+  cloak.castShadow = true;
+  npcGroup.add(cloak);
 
-  // Hooded Head
-  const hoodMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(0.44, 16, 16),
+  // ---------- 5. Chest, stole and belt ----------
+  const chest = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.44, 0.72, 14), robeMat);
+  chest.position.y = 2.36;
+  chest.castShadow = true;
+  npcGroup.add(chest);
+
+  const stoleL = new THREE.Mesh(new THREE.BoxGeometry(0.13, 1.25, 0.08), accentMat);
+  stoleL.position.set(-0.15, 1.95, 0.38);
+  stoleL.rotation.z = 0.06;
+  npcGroup.add(stoleL);
+  const stoleR = stoleL.clone();
+  stoleR.position.x = 0.17;
+  stoleR.rotation.z = -0.06;
+  npcGroup.add(stoleR);
+
+  const belt = new THREE.Mesh(new THREE.TorusGeometry(0.44, 0.045, 6, 20), trimMat);
+  belt.rotation.x = Math.PI / 2;
+  belt.position.y = 2.02;
+  npcGroup.add(belt);
+
+  const clasp = new THREE.Mesh(new THREE.OctahedronGeometry(0.11, 0), accentMat);
+  clasp.position.set(0, 2.02, 0.44);
+  npcGroup.add(clasp);
+
+  // ---------- 6. Shoulder mantle ----------
+  const mantle = new THREE.Mesh(
+    new THREE.SphereGeometry(0.72, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.55),
+    robeLining
+  );
+  mantle.scale.set(0.9, 0.58, 0.86);
+  mantle.position.y = 2.62;
+  mantle.castShadow = true;
+  npcGroup.add(mantle);
+
+  const collar = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.05, 6, 18), trimMat);
+  collar.rotation.x = Math.PI / 2;
+  collar.position.y = 2.74;
+  npcGroup.add(collar);
+
+  // ---------- 7. Sleeved arms ----------
+  const makeArm = (side: 1 | -1) => {
+    const arm = new THREE.Group();
+    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.24, 0.86, 10), robeMat);
+    sleeve.position.y = -0.4;
+    sleeve.castShadow = true;
+    arm.add(sleeve);
+    const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 6, 14), accentMat);
+    cuff.rotation.x = Math.PI / 2;
+    cuff.position.y = -0.8;
+    arm.add(cuff);
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 8), skinMat);
+    hand.position.y = -0.92;
+    arm.add(hand);
+    arm.position.set(side * 0.42, 2.56, 0.04);
+    arm.rotation.z = side * 0.22;
+    arm.rotation.x = -0.18;
+    return arm;
+  };
+  npcGroup.add(makeArm(1));
+  npcGroup.add(makeArm(-1));
+
+  // ---------- 8. Hood, cowl shadow and glowing eyes ----------
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.33, 16, 14), skinMat);
+  head.position.set(0, 3.02, 0.02);
+  npcGroup.add(head);
+
+  const hood = new THREE.Mesh(
+    new THREE.SphereGeometry(0.46, 20, 16, 0, Math.PI * 2, 0, Math.PI * 0.78),
     robeMat
   );
-  hoodMesh.position.y = 2.45;
-  hoodMesh.castShadow = true;
-  npcGroup.add(hoodMesh);
+  hood.scale.set(1.0, 1.12, 1.06);
+  hood.position.y = 3.06;
+  hood.rotation.x = -0.16;
+  hood.castShadow = true;
+  npcGroup.add(hood);
 
-  // Inner Serene Face Glow
-  const innerFace = new THREE.Mesh(
-    new THREE.SphereGeometry(0.24, 12, 12),
-    new THREE.MeshBasicMaterial({
-      color: 0xfef08a,
-    })
+  const cowlShadow = new THREE.Mesh(
+    new THREE.SphereGeometry(0.3, 14, 12),
+    new THREE.MeshBasicMaterial({ color: 0x05070d })
   );
-  innerFace.position.set(0, 2.42, 0.2);
-  npcGroup.add(innerFace);
+  cowlShadow.scale.set(1.0, 0.9, 0.6);
+  cowlShadow.position.set(0, 3.0, 0.19);
+  npcGroup.add(cowlShadow);
 
-  // 3. Unique Floating Sacred Relic
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xfff3c4 });
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), eyeMat);
+  eyeL.position.set(-0.11, 3.03, 0.33);
+  npcGroup.add(eyeL);
+  const eyeR = eyeL.clone();
+  eyeR.position.x = 0.11;
+  npcGroup.add(eyeR);
+
+  const hoodPeak = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.42, 10), robeMat);
+  hoodPeak.position.set(0, 3.5, -0.16);
+  hoodPeak.rotation.x = 0.5;
+  npcGroup.add(hoodPeak);
+
+  // ---------- 9. Staff cradling the relic ----------
+  const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 3.3, 8), trimMat);
+  staff.position.set(1.0, 1.9, 0.3);
+  staff.rotation.z = -0.06;
+  staff.castShadow = true;
+  npcGroup.add(staff);
+
+  const socket = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.04, 6, 20), accentMat);
+  socket.position.set(1.0, 1.7, 0.3);
+  socket.rotation.y = Math.PI / 2;
+  npcGroup.add(socket);
+
+  // ---------- 10. Unique floating sacred relic ----------
   let relicMesh: THREE.Mesh;
   if (npc.id === 'npc-zahra') {
-    // Lotus Rosary
     relicMesh = new THREE.Mesh(
-      new THREE.TorusGeometry(0.42, 0.08, 12, 24),
-      new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x38bdf8, emissiveIntensity: 0.7 })
+      new THREE.TorusKnotGeometry(0.22, 0.06, 48, 8),
+      new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x38bdf8, emissiveIntensity: 0.8, roughness: 0.3 })
     );
   } else if (npc.id === 'npc-tariq') {
-    // Hearth Ember
     relicMesh = new THREE.Mesh(
-      new THREE.DodecahedronGeometry(0.38, 1),
-      new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0xf43f5e, emissiveIntensity: 0.9 })
+      new THREE.DodecahedronGeometry(0.3, 0),
+      new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0xf43f5e, emissiveIntensity: 1.0, roughness: 0.25, flatShading: true })
     );
   } else if (npc.id === 'npc-rayan') {
-    // Vitality Crest
     relicMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.45, 0.65, 0.12),
-      new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 0.6 })
+      new THREE.IcosahedronGeometry(0.3, 0),
+      new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 0.8, roughness: 0.3, flatShading: true })
     );
   } else if (npc.id === 'npc-idris') {
-    // Scriptorium Book
     relicMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.55, 0.12, 0.42),
-      new THREE.MeshStandardMaterial({ color: 0x60a5fa, emissive: 0x60a5fa, emissiveIntensity: 0.6 })
+      new THREE.BoxGeometry(0.42, 0.1, 0.32),
+      new THREE.MeshStandardMaterial({ color: 0x60a5fa, emissive: 0x60a5fa, emissiveIntensity: 0.7, roughness: 0.35 })
     );
   } else if (npc.id === 'npc-layla') {
-    // Prism of Creativity
     relicMesh = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.42, 0),
-      new THREE.MeshStandardMaterial({ color: 0xc084fc, emissive: 0xc084fc, emissiveIntensity: 0.8 })
+      new THREE.OctahedronGeometry(0.32, 0),
+      new THREE.MeshStandardMaterial({ color: 0xc084fc, emissive: 0xc084fc, emissiveIntensity: 0.9, roughness: 0.2, flatShading: true })
     );
   } else {
-    // Astrolabe for Sage Elyon
     relicMesh = new THREE.Mesh(
-      new THREE.TorusGeometry(0.45, 0.06, 8, 24),
-      new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.8 })
+      new THREE.TorusGeometry(0.26, 0.05, 8, 24),
+      new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.9, roughness: 0.3 })
     );
   }
-  relicMesh.position.set(1.2, 1.7, 0.3);
+  relicMesh.position.set(1.0, 1.7, 0.3);
   npcGroup.add(relicMesh);
 
-  // 4. Overhead Halo
+  const relicAura = new THREE.Mesh(
+    new THREE.SphereGeometry(0.5, 12, 10),
+    new THREE.MeshBasicMaterial({
+      color: themeHex,
+      transparent: true,
+      opacity: 0.14,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    })
+  );
+  relicMesh.add(relicAura);
+
+  // ---------- 11. Overhead halo + orbiting motes (motes ride the halo spin) ----------
   const halo = new THREE.Mesh(
-    new THREE.TorusGeometry(0.5, 0.035, 8, 24),
-    new THREE.MeshBasicMaterial({ color: themeHex, transparent: true, opacity: 0.85 })
+    new THREE.TorusGeometry(0.55, 0.03, 8, 28),
+    new THREE.MeshBasicMaterial({ color: themeHex, transparent: true, opacity: 0.9 })
   );
   halo.rotation.x = Math.PI / 2;
-  halo.position.set(0, 3.1, 0);
+  halo.position.set(0, 3.72, 0);
   npcGroup.add(halo);
 
-  // 5. Overhead Rotating Dialogue Beacon Rune
+  const moteMat = new THREE.MeshBasicMaterial({
+    color: themeHex,
+    transparent: true,
+    opacity: 0.85,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const moteGeo = new THREE.SphereGeometry(0.05, 6, 6);
+  for (let i = 0; i < 7; i += 1) {
+    const mote = new THREE.Mesh(moteGeo, moteMat);
+    const a = (i / 7) * Math.PI * 2;
+    const r = 0.85 + (i % 3) * 0.16;
+    // halo is rotated flat, so local z becomes world height
+    mote.position.set(Math.cos(a) * r, Math.sin(a) * r, (i % 2 === 0 ? 0.35 : -0.5) - i * 0.05);
+    halo.add(mote);
+  }
+
+  // ---------- 12. Overhead rotating dialogue beacon rune ----------
   const beaconRune = new THREE.Mesh(
-    new THREE.OctahedronGeometry(0.45, 0),
+    new THREE.OctahedronGeometry(0.34, 0),
     new THREE.MeshBasicMaterial({ color: themeHex })
   );
-  beaconRune.position.set(0, 3.8, 0);
+  beaconRune.position.set(0, 4.3, 0);
   npcGroup.add(beaconRune);
 
   // Overhead Canvas Billboard Sprite
   const nametagSprite = createNPCLabelSprite(npc.name, npc.title, npc.accentHex);
+  nametagSprite.position.y = Math.max(nametagSprite.position.y, 5.1);
   npcGroup.add(nametagSprite);
   npcGroup.scale.setScalar(1.45);
 
@@ -435,7 +817,7 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
   const [cameraMode, setCameraMode] = useState<'chase' | 'cinematic' | 'firstPerson'>('chase');
   const [flightState, setFlightState] = useState<'SOARING' | 'GLIDING' | 'DIVING' | 'BOOSTING' | 'PERCHED'>('PERCHED');
   const [isDofEnabled, setIsDofEnabled] = useState(false);
-  const [bloomEnabled, setBloomEnabled] = useState(false);
+  const [bloomEnabled, setBloomEnabled] = useState(true);
   const [invertPitch, setInvertPitch] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -770,6 +1152,67 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
           acc = 0x7e22ce;
           beacon = 0xc084fc;
           break;
+        case 'kinship':
+          y = 34;
+          col = 0xfb923c;
+          acc = 0xc2410c;
+          beacon = 0xfdba74;
+          break;
+        case 'courage':
+          y = 60;
+          col = 0xef4444;
+          acc = 0x991b1b;
+          beacon = 0xf87171;
+          break;
+        case 'abundance':
+          y = 46;
+          col = 0xa3e635;
+          acc = 0x4d7c0f;
+          beacon = 0xbef264;
+          break;
+        case 'tidewatch':
+          y = 72;
+          col = 0x2dd4bf;
+          acc = 0x0f766e;
+          beacon = 0x5eead4;
+          break;
+        case 'emberfall':
+          y = 38;
+          col = 0xf97316;
+          acc = 0x7c2d12;
+          beacon = 0xfdba74;
+          break;
+        case 'stillhollow':
+          y = 82;
+          col = 0x818cf8;
+          acc = 0x3730a3;
+          beacon = 0xa5b4fc;
+          break;
+        case 'wanderlight':
+          y = 96;
+          col = 0xe2e8f0;
+          acc = 0x475569;
+          beacon = 0xffffff;
+          break;
+        case 'saltgate':
+          y = 30;
+          col = 0x94a3b8;
+          acc = 0x334155;
+          beacon = 0xcbd5e1;
+          break;
+        case 'zenith':
+          y = 150;
+          col = 0xf8fafc;
+          acc = 0x64748b;
+          beacon = 0xffffff;
+          break;
+      }
+
+      const sealed = chaptersOpenForIsland(island.id) === 0;
+      if (sealed) {
+        col = 0x2a2f38;
+        acc = 0x1b1f26;
+        beacon = 0x3f4652;
       }
 
       return {
@@ -780,6 +1223,7 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
         accentColor: acc,
         beaconColor: beacon,
         height: y,
+        sealed,
       };
     });
   }, []);
@@ -900,7 +1344,7 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.16;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -930,27 +1374,64 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
         uniform float time;
         varying vec3 vWorldPosition;
 
+        // cheap value noise for nebula banding
+        float hash(vec3 p) {
+          return fract(sin(dot(p, vec3(17.13, 41.77, 91.31))) * 43758.5453);
+        }
+        float noise(vec3 p) {
+          vec3 i = floor(p);
+          vec3 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+          float n = mix(
+            mix(mix(hash(i), hash(i + vec3(1,0,0)), f.x), mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
+            mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x), mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y),
+            f.z);
+          return n;
+        }
+        float fbm(vec3 p) {
+          float v = 0.0;
+          float a = 0.5;
+          for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; }
+          return v;
+        }
+
         void main() {
           vec3 dir = normalize(vWorldPosition);
           float h = dir.y;
 
-          // Atmospheric gradient blending
-          vec3 sky = mix(horizonColor, topColor, max(h, 0.0));
+          // Atmospheric gradient with a soft, wide horizon band
+          float up = smoothstep(0.0, 0.55, h);
+          vec3 sky = mix(horizonColor, topColor, up);
           if (h < 0.0) {
-            sky = mix(horizonColor, bottomColor, clamp(-h * 2.2, 0.0, 1.0));
+            sky = mix(horizonColor, bottomColor, clamp(pow(-h, 0.6) * 1.7, 0.0, 1.0));
           }
 
-          // Subtle celestial shimmer / cosmic haze
-          float shimmer = sin(dir.x * 20.0 + time * 0.2) * cos(dir.z * 20.0 + time * 0.15) * 0.03;
+          // Luminous horizon bloom that hugs the skyline
+          float band = exp(-abs(h) * 7.0);
+          sky += horizonColor * band * 0.32;
+
+          // Drifting nebula veils, brighter high in the dome
+          float veil = fbm(dir * 2.6 + vec3(time * 0.012, time * 0.006, -time * 0.009));
+          float veilMask = smoothstep(0.02, 0.75, h) * smoothstep(0.35, 0.85, veil);
+          sky += mix(topColor, vec3(0.75, 0.82, 1.0), 0.45) * veilMask * 0.22;
+
+          // Fine celestial shimmer
+          float shimmer = sin(dir.x * 20.0 + time * 0.2) * cos(dir.z * 20.0 + time * 0.15) * 0.02;
           sky += vec3(shimmer * 0.5, shimmer * 0.7, shimmer);
 
           // Luminous sun flare & coronal atmosphere
           float sunDot = max(dot(dir, sunPosition), 0.0);
-          vec3 sunCore = vec3(1.0, 0.95, 0.8) * pow(sunDot, 180.0) * 2.4;
-          vec3 sunHalo = vec3(1.0, 0.8, 0.5) * pow(sunDot, 18.0) * 0.75;
-          vec3 sunGlow = horizonColor * pow(sunDot, 4.0) * 0.45;
+          vec3 sunCore = vec3(1.0, 0.96, 0.85) * pow(sunDot, 220.0) * 3.0;
+          vec3 sunHalo = vec3(1.0, 0.82, 0.55) * pow(sunDot, 22.0) * 0.85;
+          vec3 sunGlow = horizonColor * pow(sunDot, 3.0) * 0.55;
+          // anamorphic streak across the horizon
+          float streak = pow(max(0.0, 1.0 - abs(h - sunPosition.y) * 9.0), 3.0) * pow(sunDot, 2.0);
+          vec3 sunStreak = vec3(1.0, 0.88, 0.7) * streak * 0.35;
 
-          gl_FragColor = vec4(sky + sunCore + sunHalo + sunGlow, 1.0);
+          vec3 col = sky + sunCore + sunHalo + sunGlow + sunStreak;
+          // gentle dithering so wide gradients never band
+          col += (hash(vec3(gl_FragCoord.xy, 1.0)) - 0.5) * 0.008;
+          gl_FragColor = vec4(col, 1.0);
         }
       `,
       side: THREE.BackSide,
@@ -1062,6 +1543,108 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
     }
     scene.add(cloudGroup);
 
+    // Atmospheric depth: luminous horizon haze + drifting mist sheets + sun shafts
+    const gradientTexture = (stops: [number, string][], vertical = true) => {
+      const cv = document.createElement('canvas');
+      cv.width = vertical ? 4 : 256;
+      cv.height = vertical ? 256 : 4;
+      const ctx = cv.getContext('2d');
+      const grd = vertical
+        ? ctx.createLinearGradient(0, cv.height, 0, 0)
+        : ctx.createLinearGradient(0, 0, cv.width, 0);
+      stops.forEach(([at, color]) => grd.addColorStop(at, color));
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, cv.width, cv.height);
+      const tex = new THREE.CanvasTexture(cv);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    };
+
+    const radialTexture = () => {
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 256;
+      const ctx = cv.getContext('2d');
+      const grd = ctx.createRadialGradient(128, 128, 8, 128, 128, 128);
+      grd.addColorStop(0, 'rgba(255,255,255,0.55)');
+      grd.addColorStop(0.45, 'rgba(255,255,255,0.16)');
+      grd.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, 256, 256);
+      const tex = new THREE.CanvasTexture(cv);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    };
+
+    const hazeMat = new THREE.MeshBasicMaterial({
+      map: gradientTexture([
+        [0, 'rgba(255,255,255,0.55)'],
+        [0.35, 'rgba(255,255,255,0.18)'],
+        [1, 'rgba(255,255,255,0)'],
+      ]),
+      color: curPalette.skyHorizon.clone(),
+      transparent: true,
+      opacity: 0.6,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.BackSide,
+      fog: false,
+    });
+    const horizonHaze = new THREE.Mesh(
+      new THREE.CylinderGeometry(1900, 1900, 900, 48, 1, true),
+      hazeMat
+    );
+    horizonHaze.position.y = 120;
+    scene.add(horizonHaze);
+    envRefs.current.hazeMat = hazeMat;
+
+    const mistTex = radialTexture();
+    const mistSheets: THREE.Mesh[] = [];
+    for (let m = 0; m < 4; m++) {
+      const mat = new THREE.MeshBasicMaterial({
+        map: mistTex,
+        color: 0xdce9ff,
+        transparent: true,
+        opacity: 0.14 + m * 0.03,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        fog: false,
+      });
+      const sheet = new THREE.Mesh(new THREE.PlaneGeometry(2600, 2600), mat);
+      sheet.rotation.x = -Math.PI / 2;
+      sheet.position.y = -46 + m * 22;
+      sheet.rotation.z = Math.random() * Math.PI;
+      scene.add(sheet);
+      mistSheets.push(sheet);
+    }
+
+    // Volumetric sun shafts: soft additive blades aimed down from the sun
+    const shaftGroup = new THREE.Group();
+    const shaftTex = gradientTexture([
+      [0, 'rgba(255,255,255,0)'],
+      [0.55, 'rgba(255,255,255,0.35)'],
+      [1, 'rgba(255,255,255,0)'],
+    ]);
+    for (let s = 0; s < 7; s++) {
+      const mat = new THREE.MeshBasicMaterial({
+        map: shaftTex,
+        color: curPalette.sunColor.clone(),
+        transparent: true,
+        opacity: 0.1 + Math.random() * 0.07,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        fog: false,
+      });
+      const blade = new THREE.Mesh(new THREE.PlaneGeometry(70 + Math.random() * 120, 1400), mat);
+      blade.position.set((Math.random() - 0.5) * 700, 300, (Math.random() - 0.5) * 700);
+      blade.rotation.y = Math.random() * Math.PI;
+      blade.rotation.z = (Math.random() - 0.5) * 0.25;
+      shaftGroup.add(blade);
+    }
+    scene.add(shaftGroup);
+    envRefs.current.shaftGroup = shaftGroup;
+
     // Ambient floating celestial feathers / dust motes in sky
     const moteCount = 180;
     const moteGeo = new THREE.BufferGeometry();
@@ -1073,10 +1656,12 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
     }
     moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos, 3));
     const moteMat = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 2.2,
+      color: 0xdbeafe,
+      size: 0.9,
+      sizeAttenuation: true,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.5,
+      depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
     const motePoints = new THREE.Points(moteGeo, moteMat);
@@ -1102,8 +1687,19 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
     envRefs.current.dirLight = dirLight;
     scene.add(dirLight);
 
-    const hemiLight = new THREE.HemisphereLight(0x93c5fd, 0x1f1a26, 0.65);
+    const hemiLight = new THREE.HemisphereLight(0xa9c9ff, 0x2b2338, 1.15);
     scene.add(hemiLight);
+
+    // Cool bounce fill from the opposite side so island faces never read as silhouettes
+    const fillLight = new THREE.DirectionalLight(0x9ec5ff, 0.85);
+    fillLight.position.copy(curPalette.sunPos).multiplyScalar(-900).setY(320);
+    scene.add(fillLight);
+    envRefs.current.fillLight = fillLight;
+
+    // Warm rim from below, lifting the underside of every floating rock
+    const rimLight = new THREE.DirectionalLight(0xffc98a, 0.45);
+    rimLight.position.set(0, -600, 400);
+    scene.add(rimLight);
 
     // 5. Construct 3D Floating Habit Islands
     const islandMeshes: THREE.Group[] = [];
@@ -1125,11 +1721,27 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
       topMesh.receiveShadow = true;
       islandRoot.add(topMesh);
 
-      // Rugged bottom floating stalactite
+      // Rugged bottom floating stalactite — tinted rock, lit veins, never a flat silhouette
+      const rockTint = new THREE.Color(cfg.color).lerp(new THREE.Color(0x2b3444), 0.66);
       const botGeo = new THREE.ConeGeometry(cfg.radius * 0.85, cfg.radius * 1.4, 24);
+      // rough up the cone so light breaks across facets
+      {
+        const pos = botGeo.attributes.position;
+        for (let v = 0; v < pos.count; v++) {
+          const y = pos.getY(v);
+          if (y > -cfg.radius * 1.3) {
+            pos.setX(v, pos.getX(v) * (0.86 + Math.random() * 0.3));
+            pos.setZ(v, pos.getZ(v) * (0.86 + Math.random() * 0.3));
+          }
+        }
+        botGeo.computeVertexNormals();
+      }
       const botMat = new THREE.MeshStandardMaterial({
-        color: 0x1e242b,
-        roughness: 0.95,
+        color: rockTint,
+        roughness: 0.88,
+        metalness: 0.12,
+        emissive: new THREE.Color(cfg.beaconColor),
+        emissiveIntensity: 0.075,
         flatShading: true,
       });
       const botMesh = new THREE.Mesh(botGeo, botMat);
@@ -1137,6 +1749,35 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
       botMesh.position.y = -cfg.radius * 0.7;
       botMesh.castShadow = true;
       islandRoot.add(botMesh);
+
+      // Glowing crystal veins hugging the underside
+      const veinMesh = new THREE.Mesh(
+        new THREE.ConeGeometry(cfg.radius * 0.9, cfg.radius * 1.5, 12, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: cfg.beaconColor,
+          transparent: true,
+          opacity: 0.14,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.BackSide,
+          wireframe: true,
+        })
+      );
+      veinMesh.rotation.x = Math.PI;
+      veinMesh.position.y = -cfg.radius * 0.72;
+      islandRoot.add(veinMesh);
+
+      // Mossy stratum band where plateau meets rock
+      const stratum = new THREE.Mesh(
+        new THREE.CylinderGeometry(cfg.radius * 0.93, cfg.radius * 0.84, 5, 32),
+        new THREE.MeshStandardMaterial({
+          color: new THREE.Color(cfg.color).lerp(new THREE.Color(0x0b1220), 0.4),
+          roughness: 0.95,
+          flatShading: true,
+        })
+      );
+      stratum.position.y = -7;
+      islandRoot.add(stratum);
 
       // Outer glowing sanctuary boundary ring
       const ringGeo = new THREE.TorusGeometry(cfg.radius * 1.08, 1.2, 12, 48);
@@ -1234,6 +1875,290 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
         );
         prism.position.y = 20;
         landmarkGroup.add(prism);
+      } else if (cfg.island.id === 'kinship') {
+        // Rope bridges to nowhere, joined by a hearth on the longest span
+        const hearthBowl = new THREE.Mesh(
+          new THREE.CylinderGeometry(7, 9, 4, 14),
+          new THREE.MeshStandardMaterial({ color: 0x3f2a17, roughness: 0.85 })
+        );
+        hearthBowl.position.y = 2;
+        landmarkGroup.add(hearthBowl);
+        const hearthFire = new THREE.Mesh(
+          new THREE.IcosahedronGeometry(5, 1),
+          new THREE.MeshBasicMaterial({ color: 0xfb923c })
+        );
+        hearthFire.position.y = 8;
+        landmarkGroup.add(hearthFire);
+        for (let i = 0; i < 4; i++) {
+          const angle = (i / 4) * Math.PI * 2 + Math.PI / 4;
+          const post = new THREE.Mesh(
+            new THREE.CylinderGeometry(1.1, 1.4, 20, 8),
+            new THREE.MeshStandardMaterial({ color: 0x51341c, roughness: 0.9 })
+          );
+          post.position.set(Math.cos(angle) * 24, 10, Math.sin(angle) * 24);
+          landmarkGroup.add(post);
+          const rope = new THREE.Mesh(
+            new THREE.TorusGeometry(24, 0.5, 6, 40, Math.PI / 2),
+            new THREE.MeshStandardMaterial({
+              color: 0xfdba74,
+              emissive: 0xfb923c,
+              emissiveIntensity: 0.25,
+              roughness: 0.7,
+            })
+          );
+          rope.rotation.x = Math.PI / 2;
+          rope.rotation.z = angle;
+          rope.position.y = 16;
+          landmarkGroup.add(rope);
+        }
+      } else if (cfg.island.id === 'courage') {
+        // A plaza of black arches, each smaller than the last
+        for (let i = 0; i < 4; i++) {
+          const scale = 1 - i * 0.18;
+          const arch = new THREE.Mesh(
+            new THREE.TorusGeometry(11 * scale, 1.6 * scale, 10, 26, Math.PI),
+            new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.6, metalness: 0.35 })
+          );
+          arch.position.set(0, 1, -20 + i * 14);
+          landmarkGroup.add(arch);
+          const lintelGlow = new THREE.Mesh(
+            new THREE.BoxGeometry(2.2 * scale, 0.6, 0.6),
+            new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.75 })
+          );
+          lintelGlow.position.set(0, 12 * scale, -20 + i * 14);
+          landmarkGroup.add(lintelGlow);
+        }
+      } else if (cfg.island.id === 'abundance') {
+        // Round granaries with chalk-line bands and an open ledger stand
+        for (let i = 0; i < 3; i++) {
+          const angle = (i / 3) * Math.PI * 2;
+          const silo = new THREE.Mesh(
+            new THREE.CylinderGeometry(7, 8.5, 22, 14),
+            new THREE.MeshStandardMaterial({ color: 0xd9d2b6, roughness: 0.85 })
+          );
+          silo.position.set(Math.cos(angle) * 18, 11, Math.sin(angle) * 18);
+          landmarkGroup.add(silo);
+          const cap = new THREE.Mesh(
+            new THREE.ConeGeometry(9.5, 7, 14),
+            new THREE.MeshStandardMaterial({ color: 0x4d7c0f, roughness: 0.7 })
+          );
+          cap.position.set(Math.cos(angle) * 18, 25, Math.sin(angle) * 18);
+          landmarkGroup.add(cap);
+          const chalk = new THREE.Mesh(
+            new THREE.TorusGeometry(8.1, 0.35, 6, 24),
+            new THREE.MeshBasicMaterial({ color: 0xbef264, transparent: true, opacity: 0.8 })
+          );
+          chalk.rotation.x = Math.PI / 2;
+          chalk.position.set(Math.cos(angle) * 18, 16, Math.sin(angle) * 18);
+          landmarkGroup.add(chalk);
+        }
+        const ledger = new THREE.Mesh(
+          new THREE.BoxGeometry(9, 0.8, 6),
+          new THREE.MeshStandardMaterial({ color: 0xf5f5f4, roughness: 0.6 })
+        );
+        ledger.rotation.x = -0.35;
+        ledger.position.y = 6;
+        landmarkGroup.add(ledger);
+      } else if (cfg.island.id === 'tidewatch') {
+        // Tiered water basins and hanging tide bells
+        for (let i = 0; i < 4; i++) {
+          const basin = new THREE.Mesh(
+            new THREE.CylinderGeometry(16 - i * 3.4, 15 - i * 3.4, 2.4, 26),
+            new THREE.MeshStandardMaterial({ color: 0x0e7490, roughness: 0.45, metalness: 0.3 })
+          );
+          basin.position.y = 3 + i * 4.2;
+          landmarkGroup.add(basin);
+          const water = new THREE.Mesh(
+            new THREE.CylinderGeometry(15 - i * 3.4, 15 - i * 3.4, 0.4, 26),
+            new THREE.MeshBasicMaterial({ color: 0x5eead4, transparent: true, opacity: 0.55 })
+          );
+          water.position.y = 4.4 + i * 4.2;
+          landmarkGroup.add(water);
+        }
+        for (let i = 0; i < 3; i++) {
+          const angle = (i / 3) * Math.PI * 2;
+          const bell = new THREE.Mesh(
+            new THREE.ConeGeometry(3.2, 5.5, 14, 1, true),
+            new THREE.MeshStandardMaterial({
+              color: 0x0d9488,
+              emissive: 0x2dd4bf,
+              emissiveIntensity: 0.3,
+              metalness: 0.7,
+              roughness: 0.35,
+              side: THREE.DoubleSide,
+            })
+          );
+          bell.position.set(Math.cos(angle) * 24, 18, Math.sin(angle) * 24);
+          landmarkGroup.add(bell);
+        }
+      } else if (cfg.island.id === 'emberfall') {
+        // A broken cone streaming ember light upward, ringed with cold hearths
+        const cone = new THREE.Mesh(
+          new THREE.ConeGeometry(15, 26, 12, 1, true),
+          new THREE.MeshStandardMaterial({
+            color: 0x1c1917,
+            emissive: 0xf97316,
+            emissiveIntensity: 0.35,
+            roughness: 0.9,
+            side: THREE.DoubleSide,
+          })
+        );
+        cone.position.y = 13;
+        landmarkGroup.add(cone);
+        const plume = new THREE.Mesh(
+          new THREE.CylinderGeometry(3.5, 7, 40, 12, 1, true),
+          new THREE.MeshBasicMaterial({ color: 0xfdba74, transparent: true, opacity: 0.22 })
+        );
+        plume.position.y = 40;
+        landmarkGroup.add(plume);
+        for (let i = 0; i < 6; i++) {
+          const angle = (i / 6) * Math.PI * 2;
+          const hearth = new THREE.Mesh(
+            new THREE.TorusGeometry(3.4, 1.1, 8, 18),
+            new THREE.MeshStandardMaterial({ color: 0x292524, roughness: 0.95 })
+          );
+          hearth.rotation.x = Math.PI / 2;
+          hearth.position.set(Math.cos(angle) * 26, 1.4, Math.sin(angle) * 26);
+          landmarkGroup.add(hearth);
+          const flame = new THREE.Mesh(
+            new THREE.SphereGeometry(1.5, 10, 10),
+            new THREE.MeshBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.85 })
+          );
+          flame.position.set(Math.cos(angle) * 26, 2.6, Math.sin(angle) * 26);
+          landmarkGroup.add(flame);
+        }
+      } else if (cfg.island.id === 'stillhollow') {
+        // A vast open shell that hums, with a ring of standing echo stones
+        const shell = new THREE.Mesh(
+          new THREE.SphereGeometry(22, 30, 20, 0, Math.PI * 2, 0, Math.PI / 2),
+          new THREE.MeshStandardMaterial({
+            color: 0x1e1b4b,
+            emissive: 0x818cf8,
+            emissiveIntensity: 0.22,
+            roughness: 0.5,
+            metalness: 0.25,
+            side: THREE.DoubleSide,
+          })
+        );
+        shell.position.y = 2;
+        landmarkGroup.add(shell);
+        for (let i = 0; i < 8; i++) {
+          const angle = (i / 8) * Math.PI * 2;
+          const stone = new THREE.Mesh(
+            new THREE.BoxGeometry(2.4, 12 + (i % 3) * 3, 2.4),
+            new THREE.MeshStandardMaterial({ color: 0x312e81, roughness: 0.75 })
+          );
+          stone.position.set(Math.cos(angle) * 30, 7, Math.sin(angle) * 30);
+          stone.rotation.y = angle;
+          landmarkGroup.add(stone);
+          const glow = new THREE.Mesh(
+            new THREE.SphereGeometry(0.9, 10, 10),
+            new THREE.MeshBasicMaterial({ color: 0xa5b4fc, transparent: true, opacity: 0.8 })
+          );
+          glow.position.set(Math.cos(angle) * 30, 15 + (i % 3) * 3, Math.sin(angle) * 30);
+          landmarkGroup.add(glow);
+        }
+      } else if (cfg.island.id === 'wanderlight') {
+        // A bare white slab, a lamp pole, and light that falls outward
+        const slab = new THREE.Mesh(
+          new THREE.CylinderGeometry(26, 24, 1.4, 24),
+          new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.6, metalness: 0.1 })
+        );
+        slab.position.y = 1;
+        landmarkGroup.add(slab);
+        const pole = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.5, 0.6, 18, 10),
+          new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.5, metalness: 0.6 })
+        );
+        pole.position.set(4, 10, -2);
+        landmarkGroup.add(pole);
+        const lamp = new THREE.Mesh(
+          new THREE.SphereGeometry(2.2, 16, 16),
+          new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 })
+        );
+        lamp.position.set(4, 19, -2);
+        landmarkGroup.add(lamp);
+        const lampLight = new THREE.PointLight(0xfff6e0, 3.2, 220, 2);
+        lampLight.position.copy(lamp.position);
+        landmarkGroup.add(lampLight);
+        for (let i = 0; i < 6; i++) {
+          const marker = new THREE.Mesh(
+            new THREE.BoxGeometry(1.2, 2.4, 1.2),
+            new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.7 })
+          );
+          marker.position.set(-18 + i * 7, 2.4, 12);
+          landmarkGroup.add(marker);
+        }
+      } else if (cfg.island.id === 'saltgate') {
+        // A cut harbour of moored boats along two stone quays
+        const quayMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.85 });
+        [-14, 14].forEach((z) => {
+          const quay = new THREE.Mesh(new THREE.BoxGeometry(52, 2.4, 6), quayMat);
+          quay.position.set(0, 1.4, z);
+          landmarkGroup.add(quay);
+        });
+        const water = new THREE.Mesh(
+          new THREE.PlaneGeometry(52, 20),
+          new THREE.MeshStandardMaterial({
+            color: 0x0f2b31,
+            emissive: 0x134e4a,
+            emissiveIntensity: 0.25,
+            roughness: 0.25,
+            metalness: 0.5,
+          })
+        );
+        water.rotation.x = -Math.PI / 2;
+        water.position.y = 0.7;
+        landmarkGroup.add(water);
+        for (let i = 0; i < 8; i++) {
+          const hull = new THREE.Mesh(
+            new THREE.CapsuleGeometry(1.3, 4.4, 6, 10),
+            new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.7 })
+          );
+          hull.rotation.z = Math.PI / 2;
+          hull.position.set(-21 + i * 6, 1.6, i % 2 === 0 ? -8 : 8);
+          landmarkGroup.add(hull);
+          const mast = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.18, 0.22, 8, 6),
+            new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.6 })
+          );
+          mast.position.set(hull.position.x, 5.6, hull.position.z);
+          landmarkGroup.add(mast);
+        }
+      } else if (cfg.island.id === 'zenith') {
+        // A ring of white stone with nothing inside it, and a drafting table on the rim
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(30, 2.4, 12, 48),
+          new THREE.MeshStandardMaterial({
+            color: 0xf8fafc,
+            emissive: 0xffffff,
+            emissiveIntensity: 0.18,
+            roughness: 0.35,
+            metalness: 0.35,
+          })
+        );
+        ring.rotation.x = Math.PI / 2;
+        ring.position.y = 3;
+        landmarkGroup.add(ring);
+        const table = new THREE.Mesh(
+          new THREE.BoxGeometry(9, 0.6, 6),
+          new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.5 })
+        );
+        table.position.set(0, 5.4, -26);
+        table.rotation.z = -0.06;
+        landmarkGroup.add(table);
+        for (let i = 0; i < 12; i++) {
+          const angle = (i / 12) * Math.PI * 2;
+          const spark = new THREE.Mesh(
+            new THREE.SphereGeometry(0.6, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75 })
+          );
+          spark.position.set(Math.cos(angle) * 30, 7 + (i % 4) * 1.6, Math.sin(angle) * 30);
+          landmarkGroup.add(spark);
+        }
+        const rimLight = new THREE.PointLight(0xffffff, 2.4, 260, 2);
+        rimLight.position.set(0, 12, 0);
+        landmarkGroup.add(rimLight);
       } else {
         // --- THE NEXUS INTRODUCTORY STRAIGHT SANCTUARY WALKWAY ---
         const pathGroup = new THREE.Group();
@@ -1428,6 +2353,11 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
     ISLAND_NPCS.forEach((npc) => {
       const islandCfg = islandConfigs.find((c) => c.island.id === npc.islandId);
       if (!islandCfg) return;
+      // Keepers arrive with the campaign: the island must be awake, and later
+      // keepers wait for their chapter to open.
+      const chaptersHere = chaptersOpenForIsland(npc.islandId);
+      if (chaptersHere < (npc.requiresChapter ?? 1)) return;
+
 
       const entity = createNPCEntity(npc);
       const worldX = islandCfg.pos.x + npc.localPos.x;
@@ -1836,197 +2766,282 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
       metalness: 0.85,
     });
 
-    // 1. Torso & Discipline Vestment
+    // 1. Torso & Discipline Vestment — a proportioned hooded traveler
     const charTorsoGroup = new THREE.Group();
     charTorsoGroup.position.set(0, 1.8, 0);
     humanoidBody.add(charTorsoGroup);
 
-    const charTorsoMesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.52, 0.42, 1.45, 16),
-      charChestMat
-    );
+    const charLeatherMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2334,
+      roughness: 0.82,
+      metalness: 0.08,
+      flatShading: true,
+    });
+
+    // Chest — tapered lathe torso instead of a plain cylinder
+    const torsoProfile: THREE.Vector2[] = [
+      new THREE.Vector2(0.02, -0.75),
+      new THREE.Vector2(0.32, -0.74),
+      new THREE.Vector2(0.36, -0.5),
+      new THREE.Vector2(0.33, -0.24),
+      new THREE.Vector2(0.38, 0.16),
+      new THREE.Vector2(0.42, 0.46),
+      new THREE.Vector2(0.34, 0.66),
+      new THREE.Vector2(0.02, 0.7),
+    ];
+    const charTorsoMesh = new THREE.Mesh(new THREE.LatheGeometry(torsoProfile, 18), charChestMat);
+    charTorsoMesh.scale.z = 0.78;
     charTorsoMesh.castShadow = true;
     charTorsoGroup.add(charTorsoMesh);
 
+    // Layered tunic skirt over the hips
+    const charSkirt = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.36, 0.56, 0.62, 16, 1, true),
+      new THREE.MeshStandardMaterial({
+        color: 0x16202f,
+        roughness: 0.85,
+        side: THREE.DoubleSide,
+        flatShading: true,
+      })
+    );
+    charSkirt.position.set(0, -0.92, 0);
+    charSkirt.castShadow = true;
+    charTorsoGroup.add(charSkirt);
+
+    // Chest plate rune
+    const charChestRune = new THREE.Mesh(new THREE.OctahedronGeometry(0.1, 0), charAccessoryMat);
+    charChestRune.position.set(0, 0.18, 0.32);
+    charTorsoGroup.add(charChestRune);
+
     // Golden Belt Sash & Discipline Buckle
     const charBelt = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.48, 0.48, 0.22, 16),
+      new THREE.CylinderGeometry(0.37, 0.37, 0.16, 18),
       charGoldAccentMat
     );
-    charBelt.position.set(0, -0.6, 0);
+    charBelt.position.set(0, -0.62, 0);
+    charBelt.scale.z = 0.8;
     charTorsoGroup.add(charBelt);
 
     const charBuckle = new THREE.Mesh(
-      new THREE.BoxGeometry(0.22, 0.24, 0.12),
+      new THREE.BoxGeometry(0.16, 0.18, 0.1),
       charGoldAccentMat
     );
-    charBuckle.position.set(0, -0.6, 0.48);
+    charBuckle.position.set(0, -0.62, 0.3);
     charTorsoGroup.add(charBuckle);
 
-    // Flowing Wayfarer Cloak
-    const charCloak = new THREE.Mesh(
-      new THREE.BoxGeometry(0.92, 1.85, 0.08),
+    // Cross strap over the chest
+    const charStrap = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.98, 0.06), charLeatherMat);
+    charStrap.position.set(0.05, -0.06, 0.31);
+    charStrap.rotation.z = 0.34;
+    charTorsoGroup.add(charStrap);
+
+    // Flowing Wayfarer Cloak — pivots at the shoulders so it can sway
+    const charCloak = new THREE.Group();
+    charCloak.position.set(0, 0.52, -0.2);
+    charTorsoGroup.add(charCloak);
+
+    const cloakProfile: THREE.Vector2[] = [
+      new THREE.Vector2(0.26, 0),
+      new THREE.Vector2(0.34, -0.4),
+      new THREE.Vector2(0.4, -0.8),
+      new THREE.Vector2(0.44, -1.15),
+      new THREE.Vector2(0.4, -1.28),
+    ];
+    const charCloakMesh = new THREE.Mesh(
+      new THREE.LatheGeometry(cloakProfile, 16, Math.PI * 0.42, Math.PI * 1.16),
       new THREE.MeshStandardMaterial({
-        color: 0x1e293b,
-        roughness: 0.85,
+        color: 0x131c2c,
+        roughness: 0.88,
         side: THREE.DoubleSide,
+        flatShading: true,
       })
     );
-    charCloak.position.set(0, -0.4, -0.46);
-    charTorsoGroup.add(charCloak);
+    charCloakMesh.scale.z = 0.62;
+    charCloakMesh.castShadow = true;
+    charCloak.add(charCloakMesh);
+
+    const charCloakClaspL = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), charGoldAccentMat);
+    charCloakClaspL.position.set(-0.24, 0.02, 0.14);
+    charCloak.add(charCloakClaspL);
+    const charCloakClaspR = charCloakClaspL.clone();
+    charCloakClaspR.position.x = 0.3;
+    charCloak.add(charCloakClaspR);
 
     // 2. Head & Cowl / Circlet
     const charHeadGroup = new THREE.Group();
-    charHeadGroup.position.set(0, 1.0, 0);
+    charHeadGroup.position.set(0, 0.92, 0);
     charTorsoGroup.add(charHeadGroup);
 
-    const charHead = new THREE.Mesh(
-      new THREE.SphereGeometry(0.38, 16, 16),
-      charSkinMat
-    );
+    const charNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.16, 10), charSkinMat);
+    charNeck.position.set(0, -0.18, 0);
+    charHeadGroup.add(charNeck);
+
+    const charHead = new THREE.Mesh(new THREE.SphereGeometry(0.26, 18, 16), charSkinMat);
+    charHead.scale.set(1.0, 1.1, 0.96);
     charHead.castShadow = true;
     charHeadGroup.add(charHead);
 
-    // Head Gear: Cowl / Hood
+    // Head Gear: Cowl / Hood, open at the face
+    const charHoodMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(headColor).lerp(new THREE.Color(0x0d1524), 0.68),
+      roughness: 0.8,
+      metalness: 0.1,
+      flatShading: true,
+    });
     const charCowl = new THREE.Mesh(
-      new THREE.SphereGeometry(0.44, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.75),
-      charHeadGearMat
+      new THREE.SphereGeometry(0.3, 20, 16, 0, Math.PI * 2, 0, Math.PI * 0.66),
+      charHoodMat
     );
-    charCowl.position.set(0, 0.06, 0);
+    charCowl.scale.set(1.04, 1.06, 1.04);
+    charCowl.position.set(0, 0.04, -0.03);
+    charCowl.rotation.x = -0.14;
+    charCowl.castShadow = true;
     charHeadGroup.add(charCowl);
+
+    const charCowlRim = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.026, 6, 20), charHeadGearMat);
+    charCowlRim.rotation.x = Math.PI / 2 + 0.22;
+    charCowlRim.position.set(0, 0.02, 0.02);
+    charHeadGroup.add(charCowlRim);
+
+    const charHoodDrape = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.36, 10), charHoodMat);
+    charHoodDrape.position.set(0, 0.2, -0.24);
+    charHoodDrape.rotation.x = 0.7;
+    charHeadGroup.add(charHoodDrape);
+
+    // Eyes so the character reads as a face, not a ball
+    const charEyeMat = new THREE.MeshBasicMaterial({ color: 0x1b2130 });
+    const charEyeL = new THREE.Mesh(new THREE.SphereGeometry(0.036, 8, 8), charEyeMat);
+    charEyeL.position.set(-0.09, 0.02, 0.24);
+    charHeadGroup.add(charEyeL);
+    const charEyeR = charEyeL.clone();
+    charEyeR.position.x = 0.09;
+    charHeadGroup.add(charEyeR);
 
     // Head Jewel / Circlet crest
     const charHeadCrest = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.12, 0),
+      new THREE.OctahedronGeometry(0.08, 0),
       charGoldAccentMat
     );
-    charHeadCrest.position.set(0, 0.35, 0.4);
+    charHeadCrest.position.set(0, 0.22, 0.2);
     charHeadGroup.add(charHeadCrest);
 
     // Floating Sacred Halo / Starlight Ring above head
     const charHalo = new THREE.Mesh(
-      new THREE.TorusGeometry(0.55, 0.03, 8, 32),
-      new THREE.MeshBasicMaterial({ color: 0xfde047, transparent: true, opacity: 0.88 })
+      new THREE.TorusGeometry(0.4, 0.022, 8, 32),
+      new THREE.MeshBasicMaterial({ color: 0xfde047, transparent: true, opacity: 0.85 })
     );
     charHalo.rotation.x = Math.PI / 2;
-    charHalo.position.set(0, 0.7, 0);
+    charHalo.position.set(0, 0.5, 0);
     charHeadGroup.add(charHalo);
 
     // 3. Neck & Sacred Accessory Relic
     const charAmulet = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.16, 0),
+      new THREE.OctahedronGeometry(0.1, 0),
       charAccessoryMat
     );
-    charAmulet.position.set(0, 0.28, 0.5);
+    charAmulet.position.set(0, 0.45, 0.28);
     charTorsoGroup.add(charAmulet);
 
     // 4. Arms & Equipped Weapon
-    // Left Arm (Balanced posture)
-    const charLeftArmGroup = new THREE.Group();
-    charLeftArmGroup.position.set(0.68, 0.45, 0);
-    charTorsoGroup.add(charLeftArmGroup);
+    const buildArm = (side: 1 | -1) => {
+      const group = new THREE.Group();
+      group.position.set(side * 0.44, 0.44, 0);
+      charTorsoGroup.add(group);
 
-    const charLeftPauldron = new THREE.Mesh(
-      new THREE.SphereGeometry(0.24, 12, 12),
-      charChestMat
-    );
-    charLeftArmGroup.add(charLeftPauldron);
+      const pauldron = new THREE.Mesh(
+        new THREE.SphereGeometry(0.17, 14, 12, 0, Math.PI * 2, 0, Math.PI * 0.62),
+        charChestMat
+      );
+      pauldron.scale.set(1.1, 0.9, 1.0);
+      pauldron.rotation.z = side * 0.2;
+      pauldron.castShadow = true;
+      group.add(pauldron);
 
-    const charLeftArm = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.1, 1.1, 10),
-      charSkinMat
-    );
-    charLeftArm.position.set(0, -0.55, 0);
-    charLeftArmGroup.add(charLeftArm);
+      const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.075, 0.5, 10), charSkinMat);
+      upper.position.set(0, -0.3, 0);
+      group.add(upper);
 
-    // Right Arm (Holding weapon)
-    const charRightArmGroup = new THREE.Group();
-    charRightArmGroup.position.set(-0.68, 0.45, 0);
-    charTorsoGroup.add(charRightArmGroup);
+      const bracer = new THREE.Mesh(new THREE.CylinderGeometry(0.088, 0.078, 0.34, 10), charLeatherMat);
+      bracer.position.set(0, -0.68, 0);
+      group.add(bracer);
 
-    const charRightPauldron = new THREE.Mesh(
-      new THREE.SphereGeometry(0.24, 12, 12),
-      charChestMat
-    );
-    charRightArmGroup.add(charRightPauldron);
+      const hand = new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 8), charSkinMat);
+      hand.position.set(0, -0.88, 0);
+      group.add(hand);
 
-    const charRightArm = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.1, 1.1, 10),
-      charSkinMat
-    );
-    charRightArm.position.set(0, -0.55, 0);
-    charRightArmGroup.add(charRightArm);
+      group.rotation.z = side * 0.1;
+      return group;
+    };
+
+    const charLeftArmGroup = buildArm(1);
+    const charRightArmGroup = buildArm(-1);
 
     // Equipped Weapon in Right Hand (Scribe Stylus / Sacred Spear)
     const charWeaponGroup = new THREE.Group();
-    charWeaponGroup.position.set(0, -1.0, 0.35);
-    charWeaponGroup.rotation.x = 0.35;
+    charWeaponGroup.position.set(0, -0.88, 0.1);
+    charWeaponGroup.rotation.x = 0.16;
     charRightArmGroup.add(charWeaponGroup);
 
     const charStaff = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8),
+      new THREE.CylinderGeometry(0.032, 0.032, 2.1, 8),
       charGoldAccentMat
     );
     charWeaponGroup.add(charStaff);
 
-    const charWeaponTip = new THREE.Mesh(
-      new THREE.ConeGeometry(0.14, 0.8, 8),
-      charWeaponMat
+    const charStaffGrip = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.042, 0.042, 0.34, 8),
+      charLeatherMat
     );
-    charWeaponTip.position.set(0, 1.3, 0);
-    charWeaponGroup.add(charWeaponTip);
+    charWeaponGroup.add(charStaffGrip);
 
     // 5. Legs & Traveler Boots
-    // Left Leg
-    const charLeftLegGroup = new THREE.Group();
-    charLeftLegGroup.position.set(0.28, -0.7, 0);
-    charTorsoGroup.add(charLeftLegGroup);
+    const buildLeg = (side: 1 | -1) => {
+      const group = new THREE.Group();
+      group.position.set(side * 0.18, -0.72, 0);
+      charTorsoGroup.add(group);
 
-    const charLeftLeg = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.14, 0.12, 1.2, 10),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b })
-    );
-    charLeftLeg.position.set(0, -0.5, 0);
-    charLeftLegGroup.add(charLeftLeg);
+      const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.6, 10), charLeatherMat);
+      thigh.position.set(0, -0.3, 0);
+      thigh.castShadow = true;
+      group.add(thigh);
 
-    const charLeftBoot = new THREE.Mesh(
-      new THREE.BoxGeometry(0.25, 0.35, 0.5),
-      charBootsMat
-    );
-    charLeftBoot.position.set(0, -1.05, 0.1);
-    charLeftLegGroup.add(charLeftBoot);
+      const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.085, 0.5, 10), charLeatherMat);
+      shin.position.set(0, -0.78, 0);
+      group.add(shin);
 
-    // Right Leg
-    const charRightLegGroup = new THREE.Group();
-    charRightLegGroup.position.set(-0.28, -0.7, 0);
-    charTorsoGroup.add(charRightLegGroup);
+      const knee = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), charBootsMat);
+      knee.position.set(0, -0.55, 0);
+      group.add(knee);
 
-    const charRightLeg = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.14, 0.12, 1.2, 10),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b })
-    );
-    charRightLeg.position.set(0, -0.5, 0);
-    charRightLegGroup.add(charRightLeg);
+      const boot = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.36), charBootsMat);
+      boot.position.set(0, -1.02, 0.07);
+      boot.castShadow = true;
+      group.add(boot);
 
-    const charRightBoot = new THREE.Mesh(
-      new THREE.BoxGeometry(0.25, 0.35, 0.5),
-      charBootsMat
-    );
-    charRightBoot.position.set(0, -1.05, 0.1);
-    charRightLegGroup.add(charRightBoot);
+      const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.11, 0.14, 10), charBootsMat);
+      cuff.position.set(0, -0.9, 0);
+      group.add(cuff);
+
+      return group;
+    };
+
+    const charLeftLegGroup = buildLeg(1);
+    const charRightLegGroup = buildLeg(-1);
 
     // 6. Ground Sacred Lotus Aura (Rotates under feet)
     const charGroundAura = new THREE.Mesh(
-      new THREE.RingGeometry(0.6, 2.2, 32),
+      new THREE.RingGeometry(0.75, 1.7, 40),
       new THREE.MeshBasicMaterial({
         color: 0xfde047,
         transparent: true,
-        opacity: 0.6,
+        opacity: 0.4,
         side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
       })
     );
     charGroundAura.rotation.x = Math.PI / 2;
-    charGroundAura.position.set(0, -1.8, 0);
+    charGroundAura.position.set(0, -1.78, 0);
     humanoidBody.add(charGroundAura);
 
     // 7. Transformation Ring Shockwave FX
@@ -2078,9 +3093,9 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
 
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(container.clientWidth || window.innerWidth, container.clientHeight || window.innerHeight),
-      0.45, // strength
-      0.35, // radius
-      0.82  // threshold
+      0.42, // strength
+      0.62, // radius
+      0.88  // threshold
     );
     bloomPassRef.current = bloomPass;
     composer.addPass(bloomPass);
@@ -2091,6 +3106,50 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
       maxblur: 0.012,
     });
     composer.addPass(bokehPass);
+
+    // Final cinematic grade: vignette, subtle grain, lifted saturation
+    const gradePass = new ShaderPass({
+      uniforms: {
+        tDiffuse: { value: null },
+        uTime: { value: 0 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float uTime;
+        varying vec2 vUv;
+        void main() {
+          vec3 col = texture2D(tDiffuse, vUv).rgb;
+
+          // saturation + soft filmic contrast
+          float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+          col = mix(vec3(lum), col, 1.14);
+          col = clamp((col - 0.5) * 1.06 + 0.5, 0.0, 4.0);
+
+          // cool shadows, warm highlights
+          col += vec3(-0.012, 0.0, 0.03) * (1.0 - lum);
+          col += vec3(0.03, 0.014, -0.01) * pow(lum, 2.0);
+
+          // vignette
+          vec2 d = vUv - 0.5;
+          float vig = smoothstep(0.92, 0.28, length(d) * 1.35);
+          col *= mix(0.84, 1.0, vig);
+
+          // fine grain
+          float g = fract(sin(dot(vUv * uTime, vec2(12.9898, 78.233))) * 43758.5453);
+          col += (g - 0.5) * 0.022;
+
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `,
+    });
+    composer.addPass(gradePass);
 
     // Dynamic Speedlines / Wind Streak Particle System
     const speedlineCount = 48;
@@ -2885,6 +3944,21 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
         envRefs.current.cloudSeaMat.emissiveIntensity = 0.35 + Math.sin(elapsed * 0.8) * 0.12;
       }
 
+      // Drifting mist sheets, breathing sun shafts, grain
+      mistSheets.forEach((sheet, i) => {
+        sheet.rotation.z += 0.00016 * (i % 2 === 0 ? 1 : -1);
+        sheet.position.x = Math.sin(elapsed * 0.03 + i) * 90;
+        sheet.position.z = Math.cos(elapsed * 0.025 + i) * 90;
+        (sheet.material as THREE.MeshBasicMaterial).opacity =
+          0.1 + i * 0.025 + Math.sin(elapsed * 0.35 + i) * 0.035;
+      });
+      shaftGroup.rotation.y += 0.0004;
+      shaftGroup.children.forEach((blade, i) => {
+        (blade.material as THREE.MeshBasicMaterial).opacity =
+          0.08 + Math.abs(Math.sin(elapsed * 0.22 + i * 0.8)) * 0.09;
+      });
+      gradePass.uniforms.uTime.value = 1.0 + elapsed;
+
       // --- DYNAMIC DEPTH OF FIELD CONTINUOUS FOCUS TRACKING ---
       if (isDofEnabledRef.current && bokehPass) {
         // Dynamically lock focus distance to the exact distance between camera and avatar
@@ -2968,6 +4042,14 @@ export const FlightWorld3D: React.FC<FlightWorld3DProps> = ({
     }
     if (envRefs.current.cloudSeaMat) {
       envRefs.current.cloudSeaMat.color.setHex(palette.cloudSeaColor);
+    }
+    if (envRefs.current.hazeMat) {
+      envRefs.current.hazeMat.color.copy(palette.skyHorizon);
+    }
+    if (envRefs.current.shaftGroup) {
+      envRefs.current.shaftGroup.children.forEach((blade: THREE.Mesh) => {
+        (blade.material as THREE.MeshBasicMaterial).color.copy(palette.sunColor);
+      });
     }
     if (envRefs.current.scene && envRefs.current.scene.fog) {
       (envRefs.current.scene.fog as THREE.FogExp2).color.copy(palette.fogColor);

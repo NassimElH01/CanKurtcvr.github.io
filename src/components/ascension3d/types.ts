@@ -6,6 +6,9 @@ export type QuestId =
   | 'vitality'
   | 'wisdom'
   | 'creation'
+  | 'kinship'
+  | 'courage'
+  | 'abundance'
   | 'salah'
   | 'scholar'
   | 'athlete'
@@ -181,13 +184,22 @@ export type IslandId =
   | 'vitality'
   | 'wisdom'
   | 'creation'
+  | 'kinship'
+  | 'courage'
+  | 'abundance'
+  | 'tidewatch'
+  | 'emberfall'
+  | 'stillhollow'
+  | 'wanderlight'
+  | 'saltgate'
+  | 'zenith'
   | 'salah'
   | 'scholar'
   | 'athlete'
   | 'creator'
   | 'alchemist';
 
-export type TimeOfDay = 'dawn' | 'zenith' | 'golden' | 'twilight' | 'night';
+export type TimeOfDay = 'dawn' | 'midday' | 'golden_hour' | 'twilight' | 'starlight';
 
 export type GearSlot = 'head' | 'chest' | 'weapon' | 'accessory' | 'feet';
 

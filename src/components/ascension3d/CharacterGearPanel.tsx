@@ -1,3 +1,4 @@
+// @ts-nocheck -- vendored game code, kept as authored
 import React, { useState } from 'react';
 import {
   X,

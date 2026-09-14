@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code2, Database, Cpu, Languages } from "lucide-react";
+import { Code2, Database, Cpu, Languages, GraduationCap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export interface SkillCategory {
   title: string;
@@ -48,6 +49,8 @@ export const skillCategories: SkillCategory[] = [
     color: "text-amber-500",
     description: "IT-strategi, digital omstilling og bindeled mellem forretning og teknik.",
     skills: [
+      "Kandidat: Digital Transformation (RUC)",
+      "Bachelor: Informatik & Virksomhedsstudier (RUC)",
       "Digital Transformation",
       "IT-strategi & Ledelse",
       "UX/UI Research",
@@ -84,6 +87,43 @@ export default function SkillsSection() {
         <p className="text-sm text-muted-foreground">
           Et overblik over min tekniske værktøjskasse, analytiske profil og forretningsforståelse.
         </p>
+      </div>
+
+      {/* Akademisk IT-Uddannelsesfundament */}
+      <div className="p-4 md:p-5 rounded-xl border border-primary/25 bg-primary/5 shadow-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-foreground font-semibold text-sm md:text-base">
+            <div className="p-1.5 rounded-md bg-primary/15 text-primary">
+              <GraduationCap className="w-4 h-4" />
+            </div>
+            <span>Akademisk IT-Uddannelsesfundament</span>
+          </div>
+          <Badge variant="outline" className="border-primary/40 text-primary text-xs font-semibold">
+            RUC
+          </Badge>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <div className="p-3 rounded-lg bg-background/80 border border-border/60 space-y-1">
+            <div className="flex justify-between items-baseline">
+              <span className="text-xs font-bold text-foreground">Kandidat i Digital Transformation</span>
+              <span className="text-[11px] font-mono text-muted-foreground">Start 2026</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Roskilde Universitet (RUC) — Fokus på IT-strategi, digital procesoptimering, socioteknisk systemdesign og teknologiledelse.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-lg bg-background/80 border border-border/60 space-y-1">
+            <div className="flex justify-between items-baseline">
+              <span className="text-xs font-bold text-foreground">Bachelor i Informatik & Virksomhedsstudier</span>
+              <span className="text-[11px] font-mono text-muted-foreground">2021 - 2024</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Roskilde Universitet (RUC) — Tværfaglig kobling af datalogi, programmering (Python, JavaScript, SQL), datamodellering, forretningsøkonomi og UX.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -7,15 +7,70 @@ export interface ProjectItem {
   tags: string[];
   highlights: string[];
   actionText?: string;
+  demoId?: "debt-simulator" | "process-visualizer" | "compliance-inspector";
   gameId?: string;
   href?: string;
   downloadUrl?: string;
   githubUrl?: string;
-  iconName: "Sparkles" | "Eye" | "Box" | "FileSpreadsheet" | "Gamepad2";
+  iconName: "TrendingDown" | "Workflow" | "Scale" | "Sparkles" | "Eye" | "Box" | "FileSpreadsheet" | "Gamepad2";
   iconColor: string;
 }
 
 export const projectsData: ProjectItem[] = [
+  {
+    id: "debt-simulator",
+    title: "FinTech Debt Restructuring & Cash Flow Simulator",
+    shortTitle: "Gældssanering & Akkord Simulator",
+    category: "FinTech & Dataanalyse",
+    description: "Interaktiv finansiel beregningsmodel til simulering af komplekse gældssanerings- og akkordforhandlinger. Modellerer amortisation, rentepauser (moratorium), akkordnedslag og kreditors genvindingsgrad i realtid.",
+    tags: ["FinTech", "Recharts", "Finansiel Modellering", "Amortisation", "TypeScript", "Danske Bank Kontekst"],
+    highlights: [
+      "Realtids kalkulation af renteakkumulering, akkordnedslag og henstandsperioder",
+      "Advarselssystem mod negativ amortisation og uholdbare gældsspiraler",
+      "Dynamisk visualisering af restgældskurve og eksport af amortisationsplan til CSV"
+    ],
+    actionText: "Åbn interaktiv simulator",
+    demoId: "debt-simulator",
+    githubUrl: "https://github.com/CanKurtcvr",
+    iconName: "TrendingDown",
+    iconColor: "text-emerald-500"
+  },
+  {
+    id: "process-visualizer",
+    title: "Enterprise Process & Value Stream Visualizer",
+    shortTitle: "Procesoptimering & STP Workflow",
+    category: "Digital Transformation",
+    description: "Interaktiv procesarkitektur-model der sammenligner manuelle legacy processer (As-Is) med hændelsesdrevet automatisering (To-Be). Beregner frigjorte årsværk (FTEs), gennemløbstid og økonomisk ROI med live simulation.",
+    tags: ["Digital Transformation", "BPMN & Lean", "Straight-Through Processing", "Business Architecture", "ROI Modellering"],
+    highlights: [
+      "Side-by-side sammenligning af As-Is manuel sagsbehandling og To-Be STP-arkitektur",
+      "Dynamisk beregning af årlig omkostningsbesparelse, frigjorte FTEs og fejlreduktion",
+      "Interaktiv trin-inspektion med flaskehalsanalyse og animeret flow-simulation"
+    ],
+    actionText: "Kør procesvisualisering",
+    demoId: "process-visualizer",
+    githubUrl: "https://github.com/CanKurtcvr",
+    iconName: "Workflow",
+    iconColor: "text-blue-500"
+  },
+  {
+    id: "compliance-inspector",
+    title: "AI Legal Compliance & Contract Clause Auditor",
+    shortTitle: "AI Kontrakt- & Compliance Auditor",
+    category: "Legal Tech & AI",
+    description: "Intelligent kontrakt- og klausulinspektor der screener juridiske dokumenter mod præceptive regler i dansk ret (Forældelsesloven, Kreditaftaleloven, GDPR/DPA). Tilbyder live risikoscoring og 1-klik remediation.",
+    tags: ["Legal Tech", "Compliance & GDPR", "Forældelsesloven", "Kreditaftaleloven", "Klausul Remediation"],
+    highlights: [
+      "Automatisk identifikation af lovstridige forældelses- og rentevilkår",
+      "Realtids compliance-scoreberegning (0-100) med dynamisk risikoklassificering",
+      "Interaktiv remediationsmotor med forslag til lovmedholdige klausulformuleringer"
+    ],
+    actionText: "Test compliance audit",
+    demoId: "compliance-inspector",
+    githubUrl: "https://github.com/CanKurtcvr",
+    iconName: "Scale",
+    iconColor: "text-indigo-500"
+  },
   {
     id: "ascension-cards",
     title: "Ascension Cards — Habit RPG",
@@ -75,7 +130,7 @@ export const projectsData: ProjectItem[] = [
     id: "budget-model",
     title: "Finansiel Budget- & Likviditetsmodel",
     shortTitle: "Finansiel Budgetmodel (Excel)",
-    category: "Dataanalyse & Forretnings-IT",
+    category: "FinTech & Dataanalyse",
     description: "Omfattende økonomistyrings- og budgetmodel udviklet i Microsoft Excel. Designet til datadrevet likviditetsstyring, visualisering af pengestrømme og månedlig opfølgning for både privatøkonomi og mindre virksomheder.",
     tags: ["Excel Modellering", "Datavalidering", "Finansiel Analyse", "KPI Dashboard"],
     highlights: [
@@ -93,7 +148,7 @@ export const projectsData: ProjectItem[] = [
     id: "arcade-games",
     title: "Canvas Arcade State Machines",
     shortTitle: "Canvas Arcade (TypeScript)",
-    category: "Frontend Arkitektur",
+    category: "Full Stack & Web App",
     description: "En række klassiske arkadespil (Blackjack med casinoregler, Snake med input-kø og collision detection, Pong med vektor-refleksion) bygget fra bunden med ren TypeScript og HTML5 Canvas.",
     tags: ["TypeScript", "Canvas API", "Framer Motion", "State Management"],
     highlights: [

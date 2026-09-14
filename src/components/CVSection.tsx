@@ -13,13 +13,21 @@ export default function CVSection() {
 
   const categories = useMemo(() => [
     { id: "all" as CVCategory, label: "Alle", icon: Sparkles, count: cvItems.length },
-    { id: "it" as CVCategory, label: "IT & Digitalisering", icon: Briefcase, count: cvItems.filter(i => i.category === "it").length },
+    { 
+      id: "it" as CVCategory, 
+      label: "IT & Digitalisering", 
+      icon: Briefcase, 
+      count: cvItems.filter(i => i.category === "it" || i.tags.includes("Informatik") || i.tags.includes("Digital Transformation")).length 
+    },
     { id: "uddannelse" as CVCategory, label: "Uddannelse", icon: GraduationCap, count: cvItems.filter(i => i.category === "uddannelse").length },
     { id: "omsorg" as CVCategory, label: "Omsorg & Formidling", icon: HeartHandshake, count: cvItems.filter(i => i.category === "omsorg").length },
   ], []);
 
   const filteredItems = useMemo(() => {
     if (selectedCategory === "all") return cvItems;
+    if (selectedCategory === "it") {
+      return cvItems.filter(item => item.category === "it" || item.tags.includes("Informatik") || item.tags.includes("Digital Transformation"));
+    }
     return cvItems.filter(item => item.category === selectedCategory);
   }, [selectedCategory]);
 
@@ -35,7 +43,7 @@ export default function CVSection() {
             Erfaring & Uddannelsesforløb
           </h2>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-            Ambitiøs profil med en stærk og alsidig baggrund inden for IT, dataanalyse og formidling. Klik på et kort for at dykke ned i detaljerne, eller download det komplette CV som selvstændigt PDF-dokument.
+            Ambitiøs profil med en stærk og alsidig baggrund inden for IT, dataanalyse og formidling. Klik på et kort for at dykke ned i detaljerne, eller hent det komplette CV som PDF.
           </p>
           <div className="pt-1">
             <Button
@@ -45,7 +53,7 @@ export default function CVSection() {
               className="gap-2 rounded-full border-primary/30 hover:border-primary text-xs md:text-sm hover:bg-primary/5 shadow-xs"
             >
               <Printer className="w-3.5 h-3.5 text-primary" />
-              <span>Hent / Print CV (Standalone PDF med interaktivt indeks)</span>
+              <span>Hent / Print CV (PDF)</span>
             </Button>
           </div>
         </div>
