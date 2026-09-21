@@ -88,42 +88,85 @@ export const cvItems: CVItem[] = [
   },
   {
     id: "ss-rengoringservice",
-    title: "Rengøringsmedarbejder",
+    title: "IT-medarbejder / Administrativ medarbejder",
     organization: "S&S Rengøringservice",
     period: "Tidligere erfaring",
     type: "Erfaring",
-    category: "omsorg",
-    description: "Praktisk servicearbejde med fokus på kvalitet, ansvarlighed, struktur og en professionel oplevelse for kunder.",
-    tags: ["Service", "Kvalitet", "Ansvarlighed", "Struktur"],
+    category: "it",
+    description: "Arbejdede med IT-relaterede og administrative opgaver for S&S Rengøringsservice, herunder digital struktur, koordinering og daglig administrativ support.",
+    tags: ["IT Support", "Administration", "Koordinering", "Digital Struktur"],
     bullets: [
-      "Leverede stabil og grundig service med fokus på kvalitet og kundetilfredshed.",
-      "Planlagde og gennemførte opgaver selvstændigt med sans for detaljer og effektivitet."
+      "Understøttede virksomheden med IT-opgaver, digital organisering og administrativ drift.",
+      "Håndterede koordinering, dokumentation og praktiske opgaver med fokus på overblik og effektivitet."
     ],
     personalCompetencies: [
-      "Grundig og kvalitetsbevidst",
-      "Selvstændig og ansvarsfuld i planlægningen af opgaver",
-      "Stabil, punktlig og professionel over for kunder",
-      "Effektiv uden at gå på kompromis med kvaliteten"
+      "Struktureret og organiseret i administrative processer",
+      "Selvstændig og ansvarsfuld i opgaveløsningen",
+      "Serviceminded og løsningsorienteret",
+      "God til at skabe digitalt og praktisk overblik"
     ]
   },
   {
     id: "badr-fight-club",
-    title: "Medarbejder",
+    title: "Træner / Servicedesk-medarbejder",
     organization: "Badr Fight Club",
     period: "Tidligere erfaring",
     type: "Erfaring",
     category: "omsorg",
-    description: "Erfaring fra et aktivt klubmiljø med fokus på samarbejde, disciplin, kommunikation og ansvar.",
-    tags: ["Samarbejde", "Kommunikation", "Disciplin", "Ansvar"],
+    description: "Arbejdede som træner og på servicedesk i et aktivt klubmiljø med ansvar for medlemmer, praktisk support, koordinering og daglig drift.",
+    tags: ["Træning", "Servicedesk", "Medlemsservice", "Kommunikation", "Ansvar"],
     bullets: [
-      "Bidrog til et positivt og struktureret miljø for medlemmer og aktiviteter.",
-      "Udviklede stærke samarbejds- og kommunikationsevner i en social og dynamisk hverdag."
+      "Planlagde og gennemførte træning samt støttede medlemmer i deres udvikling.",
+      "Sikrede service desk-support, besvarede spørgsmål og hjalp med praktiske klubopgaver.",
+      "Bidrog til et trygt, positivt og struktureret miljø for medlemmer og aktiviteter."
     ],
     personalCompetencies: [
       "Disciplineret og motiverende i et aktivt miljø",
       "Samarbejdsorienteret og god til at skabe positiv energi",
       "Kommunikerer respektfuldt med forskellige mennesker",
       "Ansvarsbevidst og løsningsorienteret"
+    ]
+  },
+  {
+    id: "taastrupgaard-kindergarten",
+    title: "Pædagogmedhjælper / Vikar",
+    organization: "Børnehave i Taastrupgaard",
+    period: "Tidligere erfaring",
+    type: "Erfaring",
+    category: "omsorg",
+    description: "Arbejdede i børnehave med fokus på børnenes trivsel, tryghed, leg og daglige aktiviteter.",
+    tags: ["Omsorg", "Børn", "Trivsel", "Samarbejde"],
+    bullets: [
+      "Støttede børnene i leg, læring og sociale aktiviteter i hverdagen.",
+      "Samarbejdede med det pædagogiske personale om en tryg og struktureret dag.",
+      "Håndterede forskellige situationer med tålmodighed, nærvær og ansvar."
+    ],
+    personalCompetencies: [
+      "Tålmodig, empatisk og nærværende",
+      "Ansvarsfuld i arbejdet med børn",
+      "God til at skabe tryghed og positive relationer",
+      "Fleksibel og rolig i en omskiftelig hverdag"
+    ]
+  },
+  {
+    id: "ab-catering-warehouse",
+    title: "Lagermedarbejder",
+    organization: "AB & Catering",
+    period: "Tidligere erfaring",
+    type: "Erfaring",
+    category: "omsorg",
+    description: "Arbejdede med lager- og logistikopgaver i cateringmiljø med fokus på orden, effektivitet og korrekt håndtering af varer.",
+    tags: ["Lager", "Logistik", "Varehåndtering", "Effektivitet"],
+    bullets: [
+      "Håndterede varemodtagelse, sortering, plukning og organisering på lageret.",
+      "Bidrog til, at varer og ordrer blev gjort klar effektivt og korrekt.",
+      "Arbejdede struktureret og samarbejdede med kollegaer i et travlt miljø."
+    ],
+    personalCompetencies: [
+      "Effektiv og arbejdsom",
+      "Struktureret og omhyggelig med detaljer",
+      "Stabil og punktlig",
+      "Samarbejdsorienteret under tidspres"
     ]
   },
   {
