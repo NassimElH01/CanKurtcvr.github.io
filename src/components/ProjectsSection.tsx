@@ -189,7 +189,7 @@ export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionPro
 
                   <Button asChild variant="outline" size="sm" className="gap-1.5">
                     <a
-                      href={project.githubUrl || "https://github.com/CanKurtcvr"}
+                      href={project.githubUrl || "https://github.com/NassimElH01"}
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Se kildekode på GitHub"

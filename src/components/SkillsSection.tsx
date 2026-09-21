@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code2, Database, Cpu, Languages, GraduationCap } from "lucide-react";
+import { Code2, Database, Cpu, Languages, GraduationCap, BrainCircuit } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface SkillCategory {
@@ -54,6 +54,38 @@ export const skillCategories: SkillCategory[] = [
       "Process Optimization",
       "Cybersecurity",
       "IT Governance"
+    ]
+  },
+  {
+    title: "Programmering & Web",
+    icon: Code2,
+    color: "text-cyan-500",
+    description: "Practical programming skills used to build interactive web experiences, data workflows, and prototypes.",
+    skills: [
+      "TypeScript",
+      "JavaScript",
+      "React",
+      "HTML & CSS",
+      "Python",
+      "SQL",
+      "Tailwind CSS",
+      "Git & GitHub"
+    ]
+  },
+  {
+    title: "AI & Machine Learning",
+    icon: BrainCircuit,
+    color: "text-rose-500",
+    description: "Applied AI skills spanning generative AI, machine learning, computer vision, and responsible digitalisation.",
+    skills: [
+      "Generative AI & Prompt Engineering",
+      "Machine Learning",
+      "AI-assisted Analysis",
+      "Computer Vision",
+      "Data Preparation",
+      "Model Evaluation",
+      "AI Governance & Ethics",
+      "IBM AI / Data Projects"
     ]
   },
   {

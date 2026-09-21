@@ -74,6 +74,34 @@ export const cvItems: CVItem[] = [
     ]
   },
   {
+    id: "ss-rengoringservice",
+    title: "Rengøringsmedarbejder",
+    organization: "S&S Rengøringservice",
+    period: "Tidligere erfaring",
+    type: "Erfaring",
+    category: "omsorg",
+    description: "Praktisk servicearbejde med fokus på kvalitet, ansvarlighed, struktur og en professionel oplevelse for kunder.",
+    tags: ["Service", "Kvalitet", "Ansvarlighed", "Struktur"],
+    bullets: [
+      "Leverede stabil og grundig service med fokus på kvalitet og kundetilfredshed.",
+      "Planlagde og gennemførte opgaver selvstændigt med sans for detaljer og effektivitet."
+    ]
+  },
+  {
+    id: "badr-fight-club",
+    title: "Medarbejder",
+    organization: "Badr Fight Club",
+    period: "Tidligere erfaring",
+    type: "Erfaring",
+    category: "omsorg",
+    description: "Erfaring fra et aktivt klubmiljø med fokus på samarbejde, disciplin, kommunikation og ansvar.",
+    tags: ["Samarbejde", "Kommunikation", "Disciplin", "Ansvar"],
+    bullets: [
+      "Bidrog til et positivt og struktureret miljø for medlemmer og aktiviteter.",
+      "Udviklede stærke samarbejds- og kommunikationsevner i en social og dynamisk hverdag."
+    ]
+  },
+  {
     id: "royal-unibrew-bachelor-project",
     title: "Bachelorprojekt: OT Cyber Security & Data-Driven Project Management",
     organization: "Royal Unibrew",

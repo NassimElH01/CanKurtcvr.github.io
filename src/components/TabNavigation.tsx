@@ -1,22 +1,24 @@
 import { motion } from "framer-motion";
 import { FileText, Cloud, Newspaper, Gamepad2, Briefcase } from "lucide-react";
+import { Language, translations } from "@/lib/translations";
 
 type TabType = "cv" | "weather" | "news" | "games" | "projects";
 
 interface TabNavigationProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
+  language: Language;
 }
 
-const tabs = [
-  { id: "cv" as TabType, label: "Mit CV", icon: FileText },
-  { id: "projects" as TabType, label: "Projekter", icon: Briefcase },
-  { id: "games" as TabType, label: "Spil & Arcade", icon: Gamepad2 },
-  { id: "weather" as TabType, label: "Vejret", icon: Cloud },
-  { id: "news" as TabType, label: "Nyheder", icon: Newspaper },
-];
-
-const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
+const TabNavigation = ({ activeTab, onTabChange, language }: TabNavigationProps) => {
+  const t = translations[language].tabs;
+  const tabs = [
+    { id: "cv" as TabType, label: t.cv, icon: FileText },
+    { id: "projects" as TabType, label: t.projects, icon: Briefcase },
+    { id: "games" as TabType, label: t.games, icon: Gamepad2 },
+    { id: "weather" as TabType, label: t.weather, icon: Cloud },
+    { id: "news" as TabType, label: t.news, icon: Newspaper },
+  ];
   return (
     <nav className="sticky top-0 z-40 bg-card/95 backdrop-blur-sm border-b border-border shadow-xs" aria-label="Hovednavigation">
       <div className="max-w-4xl mx-auto">

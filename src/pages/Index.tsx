@@ -9,12 +9,15 @@ import GamesSection from "@/components/GamesSection";
 import ProjectsSection from "@/components/ProjectsSection";
 
 import PrintCVDocument from "@/components/PrintCVDocument";
+import { Language, translations } from "@/lib/translations";
 
 type TabType = "cv" | "weather" | "news" | "games" | "projects";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabType>("cv");
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
+  const [language, setLanguage] = useState<Language>("da");
+  const t = translations[language];
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -52,8 +55,8 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground print:bg-white print:min-h-0 transition-colors duration-300">
       {/* Screen View: Interactive Portfolio */}
       <div className="print:hidden max-w-4xl mx-auto bg-card shadow-xl min-h-screen border-x border-border/40">
-        <Header onPrintCV={handlePrintCV} />
-        <TabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
+        <Header onPrintCV={handlePrintCV} language={language} onLanguageChange={setLanguage} />
+        <TabNavigation activeTab={activeTab} onTabChange={handleTabChange} language={language} />
         
         <main 
           id={`panel-${activeTab}`}
@@ -80,7 +83,7 @@ const Index = () => {
 
         <footer className="border-t border-border py-6 px-8 text-center text-xs sm:text-sm text-muted-foreground space-y-1">
           <p>© {new Date().getFullYear()} Nassim Hassani</p>
-          <p className="text-xs text-muted-foreground/70">MSc Digital Transformation student · Roskilde University</p>
+          <p className="text-xs text-muted-foreground/70">{t.footer}</p>
         </footer>
       </div>
 
