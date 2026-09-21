@@ -4,20 +4,24 @@ import { MapPin, Phone, Mail, Linkedin, Github, Printer, Copy, Check } from "luc
 import { ThemeToggle } from "./ThemeToggle";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Language, translations, getLanguageLabel } from "@/lib/translations";
 
 import ContactDialog from "./ContactDialog";
 
 interface HeaderProps {
   onPrintCV?: () => void;
+  language?: Language;
+  onLanguageChange?: (language: Language) => void;
 }
 
-const Header = ({ onPrintCV }: HeaderProps = {}) => {
+const Header = ({ onPrintCV, language = "da", onLanguageChange }: HeaderProps = {}) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const t = translations[language];
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     setCopiedField(label);
-    toast.success(`${label} kopieret til udklipsholder!`);
+    toast.success(`${label} ${language === "da" ? "kopieret til udklipsholder!" : "copied to clipboard!"}`);
     setTimeout(() => setCopiedField(null), 2000);
   };
 
@@ -37,7 +41,6 @@ const Header = ({ onPrintCV }: HeaderProps = {}) => {
       className="relative overflow-hidden bg-header text-header-foreground"
       style={{ background: "var(--gradient-header)" }}
     >
-      {/* Subtle pattern overlay */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 25% 25%, hsl(var(--accent)) 1px, transparent 1px)`,
@@ -45,23 +48,36 @@ const Header = ({ onPrintCV }: HeaderProps = {}) => {
         }} />
       </div>
 
-      {/* Top action bar: Theme toggle & Print */}
       <div className="relative z-20 flex justify-end items-center gap-2 px-6 pt-4 max-w-4xl mx-auto">
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 p-1">
+          {(["da", "en"] as const).map((lang) => (
+            <button
+              key={lang}
+              type="button"
+              onClick={() => onLanguageChange?.(lang)}
+              className={`rounded-full px-2 py-1 text-[10px] font-semibold transition-colors ${
+                language === lang ? "bg-white/15 text-white" : "text-white/70 hover:text-white"
+              }`}
+              aria-label={`Switch language to ${lang.toUpperCase()}`}
+            >
+              {getLanguageLabel(lang)}
+            </button>
+          ))}
+        </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handlePrint}
           className="text-header-foreground/70 hover:text-header-foreground hover:bg-white/10 gap-1.5 text-xs md:text-sm"
-          title="Udskriv eller gem som PDF"
+          title={language === "da" ? "Udskriv eller gem som PDF" : "Print or save as PDF"}
         >
           <Printer className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Hent / Print CV</span>
+          <span className="hidden sm:inline">{t.printButton}</span>
         </Button>
         <ThemeToggle />
       </div>
       
       <div className="relative z-10 px-6 pb-12 pt-4 md:pb-16 text-center max-w-4xl mx-auto">
-        {/* Profile Image / Monogram */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -70,29 +86,27 @@ const Header = ({ onPrintCV }: HeaderProps = {}) => {
         >
           <div className="w-28 h-28 md:w-32 md:h-32 mx-auto rounded-full bg-gradient-to-br from-accent to-accent/80 p-1 shadow-xl overflow-hidden">
             <div className="w-full h-full rounded-full bg-header flex items-center justify-center text-4xl font-display font-bold text-accent select-none">
-              CK
+              NH
             </div>
           </div>
         </motion.div>
 
-        {/* Name */}
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
           className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3"
         >
-          Can Kurt
+          Nassim Hassani
         </motion.h1>
 
-        {/* Title */}
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
           className="text-base md:text-lg text-header-foreground/80 mb-2 font-medium max-w-2xl mx-auto"
         >
-          Kandidatstuderende i Digital Transformation & IT-konsulent
+          {t.heroTitle}
         </motion.p>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -100,20 +114,26 @@ const Header = ({ onPrintCV }: HeaderProps = {}) => {
           transition={{ delay: 0.45, duration: 0.5 }}
           className="text-sm md:text-base text-header-foreground/60 mb-5 italic"
         >
-          "Udvikling er mit mindset – IT og forretning er mine værktøjer."
+          {t.heroQuote}
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.47, duration: 0.5 }}
+          className="mx-auto mb-5 inline-flex rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-sm font-semibold text-accent"
+        >
+          {t.heroAvailability}
         </motion.p>
 
-        {/* Contact CTA */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.48, duration: 0.5 }}
           className="mb-6 flex justify-center"
         >
-          <ContactDialog />
+          <ContactDialog language={language} />
         </motion.div>
 
-        {/* Contact Links */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -122,47 +142,47 @@ const Header = ({ onPrintCV }: HeaderProps = {}) => {
         >
           <span className="flex items-center gap-1.5 text-header-foreground/60">
             <MapPin className="w-4 h-4 text-accent/80" />
-            København, Danmark
+            {t.location}
           </span>
           
           <div className="flex items-center gap-1">
             <a
-              href="tel:+4528701213"
+              href="tel:+4524770784"
               className="flex items-center gap-1.5 text-accent hover:text-accent/80 transition-colors"
             >
               <Phone className="w-4 h-4" />
-              +45 28 70 12 13
+              +45 24 77 07 84
             </a>
             <button
-              onClick={() => copyToClipboard("+4528701213", "Telefonnummer")}
+              onClick={() => copyToClipboard("+4524770784", language === "da" ? "Telefonnummer" : "Phone number")}
               className="p-1 text-header-foreground/40 hover:text-accent transition-colors"
-              title="Kopiér telefonnummer"
-              aria-label="Kopiér telefonnummer"
+              title={language === "da" ? "Kopiér telefonnummer" : "Copy phone number"}
+              aria-label={language === "da" ? "Kopiér telefonnummer" : "Copy phone number"}
             >
-              {copiedField === "Telefonnummer" ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedField === (language === "da" ? "Telefonnummer" : "Phone number") ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
           </div>
           
           <div className="flex items-center gap-1">
             <a
-              href="mailto:cankurtcvr@gmail.com"
+              href="mailto:naselh01@gmail.com"
               className="flex items-center gap-1.5 text-accent hover:text-accent/80 transition-colors"
             >
               <Mail className="w-4 h-4" />
-              cankurtcvr@gmail.com
+              naselh01@gmail.com
             </a>
             <button
-              onClick={() => copyToClipboard("cankurtcvr@gmail.com", "Email")}
+              onClick={() => copyToClipboard("naselh01@gmail.com", language === "da" ? "Email" : "Email")}
               className="p-1 text-header-foreground/40 hover:text-accent transition-colors"
-              title="Kopiér email"
-              aria-label="Kopiér email"
+              title={language === "da" ? "Kopiér email" : "Copy email"}
+              aria-label={language === "da" ? "Kopiér email" : "Copy email"}
             >
               {copiedField === "Email" ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
           </div>
           
           <a
-            href="https://linkedin.com/in/canxkurt"
+            href="https://www.linkedin.com/in/nassim-hassani-63835a220"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-accent hover:text-accent/80 transition-colors"
@@ -172,7 +192,7 @@ const Header = ({ onPrintCV }: HeaderProps = {}) => {
           </a>
 
           <a
-            href="https://github.com/CanKurtcvr"
+            href="https://github.com/NassimElH01"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-accent hover:text-accent/80 transition-colors"

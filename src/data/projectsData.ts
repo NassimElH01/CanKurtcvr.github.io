@@ -18,58 +18,55 @@ export interface ProjectItem {
 
 export const projectsData: ProjectItem[] = [
   {
-    id: "debt-simulator",
-    title: "FinTech Debt Restructuring & Cash Flow Simulator",
-    shortTitle: "Gældssanering & Akkord Simulator",
-    category: "FinTech & Dataanalyse",
-    description: "Interaktiv finansiel beregningsmodel til simulering af komplekse gældssanerings- og akkordforhandlinger. Modellerer amortisation, rentepauser (moratorium), akkordnedslag og kreditors genvindingsgrad i realtid.",
-    tags: ["FinTech", "Recharts", "Finansiel Modellering", "Amortisation", "TypeScript", "Danske Bank Kontekst"],
-    highlights: [
-      "Realtids kalkulation af renteakkumulering, akkordnedslag og henstandsperioder",
-      "Advarselssystem mod negativ amortisation og uholdbare gældsspiraler",
-      "Dynamisk visualisering af restgældskurve og eksport af amortisationsplan til CSV"
-    ],
-    actionText: "Åbn interaktiv simulator",
-    demoId: "debt-simulator",
-    githubUrl: "https://github.com/CanKurtcvr",
-    iconName: "TrendingDown",
-    iconColor: "text-emerald-500"
-  },
-  {
-    id: "process-visualizer",
-    title: "Enterprise Process & Value Stream Visualizer",
-    shortTitle: "Procesoptimering & STP Workflow",
+    id: "royal-unibrew-project",
+    title: "Royal Unibrew OT Cyber Security & Data-Driven PMO",
+    shortTitle: "OT Security & PMO Case",
     category: "Digital Transformation",
-    description: "Interaktiv procesarkitektur-model der sammenligner manuelle legacy processer (As-Is) med hændelsesdrevet automatisering (To-Be). Beregner frigjorte årsværk (FTEs), gennemløbstid og økonomisk ROI med live simulation.",
-    tags: ["Digital Transformation", "BPMN & Lean", "Straight-Through Processing", "Business Architecture", "ROI Modellering"],
+    description: "Bachelor project focused on OT cybersecurity and data-driven project management in an industrial environment, combining operational security with governance and stakeholder-oriented reporting.",
+    tags: ["Cybersecurity", "OT", "PMO", "Data-driven Management", "Royal Unibrew"],
     highlights: [
-      "Side-by-side sammenligning af As-Is manuel sagsbehandling og To-Be STP-arkitektur",
-      "Dynamisk beregning af årlig omkostningsbesparelse, frigjorte FTEs og fejlreduktion",
-      "Interaktiv trin-inspektion med flaskehalsanalyse og animeret flow-simulation"
+      "Analysed OT security risk in a production-oriented business context",
+      "Connected project governance with operational reporting and decision support",
+      "Produced a research-based digitalisation and security case grounded in real operations"
     ],
-    actionText: "Kør procesvisualisering",
-    demoId: "process-visualizer",
-    githubUrl: "https://github.com/CanKurtcvr",
+    actionText: "Se projektprofil",
+    githubUrl: "https://github.com/NassimElH01",
     iconName: "Workflow",
     iconColor: "text-blue-500"
   },
   {
-    id: "compliance-inspector",
-    title: "AI Legal Compliance & Contract Clause Auditor",
-    shortTitle: "AI Kontrakt- & Compliance Auditor",
-    category: "Legal Tech & AI",
-    description: "Intelligent kontrakt- og klausulinspektor der screener juridiske dokumenter mod præceptive regler i dansk ret (Forældelsesloven, Kreditaftaleloven, GDPR/DPA). Tilbyder live risikoscoring og 1-klik remediation.",
-    tags: ["Legal Tech", "Compliance & GDPR", "Forældelsesloven", "Kreditaftaleloven", "Klausul Remediation"],
+    id: "data-integration-visualizer",
+    title: "Data Integration & Process Optimization Case",
+    shortTitle: "Data Integration & Process Design",
+    category: "Digital Transformation",
+    description: "Academic assignment focused on business and technology integration, process design, and improved information flow across systems and stakeholders.",
+    tags: ["Data Integration", "Business IT", "Process Design", "Stakeholder Alignment"],
     highlights: [
-      "Automatisk identifikation af lovstridige forældelses- og rentevilkår",
-      "Realtids compliance-scoreberegning (0-100) med dynamisk risikoklassificering",
-      "Interaktiv remediationsmotor med forslag til lovmedholdige klausulformuleringer"
+      "Explored how system and process design can improve business value and control",
+      "Worked across data flows, governance challenges, and operational needs",
+      "Combined project thinking with practical digital transformation frameworks"
     ],
-    actionText: "Test compliance audit",
-    demoId: "compliance-inspector",
-    githubUrl: "https://github.com/CanKurtcvr",
+    actionText: "Se case",
+    githubUrl: "https://github.com/NassimElH01",
     iconName: "Scale",
     iconColor: "text-indigo-500"
+  },
+  {
+    id: "ibm-data-analytics",
+    title: "IBM Data Analytics & Cybersecurity Capstone",
+    shortTitle: "IBM Data Analytics Project",
+    category: "AI & Data Analytics",
+    description: "Applied analytics and cybersecurity project work using structured learning and evidence-based decision support across business and technical domains.",
+    tags: ["IBM Data Analytics", "Cybersecurity", "Machine Learning", "Data Analysis"],
+    highlights: [
+      "Applied analytical methods to real-world business and technical datasets",
+      "Strengthened skills in data interpretation, reporting, and technical problem solving",
+      "Connected data work with security awareness and risk-oriented thinking"
+    ],
+    actionText: "Se projekt",
+    githubUrl: "https://github.com/NassimElH01",
+    iconName: "Sparkles",
+    iconColor: "text-amber-500"
   },
   {
     id: "ascension-cards",
@@ -86,7 +83,7 @@ export const projectsData: ProjectItem[] = [
     actionText: "Udforsk Ascension Cards",
     gameId: "ascension-cards",
     href: "/ascensioncards/",
-    githubUrl: "https://github.com/CanKurtcvr",
+    githubUrl: "https://github.com/NassimElH01",
     iconName: "Sparkles",
     iconColor: "text-amber-500"
   },
@@ -104,7 +101,7 @@ export const projectsData: ProjectItem[] = [
     ],
     actionText: "Test kamerastyring live",
     gameId: "web-shooter",
-    githubUrl: "https://github.com/CanKurtcvr",
+    githubUrl: "https://github.com/NassimElH01",
     iconName: "Eye",
     iconColor: "text-rose-500"
   },
@@ -122,7 +119,7 @@ export const projectsData: ProjectItem[] = [
     ],
     actionText: "Se 3D simulation",
     gameId: "ascension-cards",
-    githubUrl: "https://github.com/CanKurtcvr",
+    githubUrl: "https://github.com/NassimElH01",
     iconName: "Box",
     iconColor: "text-cyan-500"
   },
@@ -140,7 +137,7 @@ export const projectsData: ProjectItem[] = [
     ],
     actionText: "Hent skabelon (Excel)",
     downloadUrl: "/budget-skabelon.xlsx",
-    githubUrl: "https://github.com/CanKurtcvr",
+    githubUrl: "https://github.com/NassimElH01",
     iconName: "FileSpreadsheet",
     iconColor: "text-emerald-500"
   },
@@ -158,7 +155,7 @@ export const projectsData: ProjectItem[] = [
     ],
     actionText: "Gå til spilarkaden",
     gameId: "snake",
-    githubUrl: "https://github.com/CanKurtcvr",
+    githubUrl: "https://github.com/NassimElH01",
     iconName: "Gamepad2",
     iconColor: "text-purple-500"
   }

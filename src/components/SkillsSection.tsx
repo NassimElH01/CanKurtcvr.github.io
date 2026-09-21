@@ -12,67 +12,63 @@ export interface SkillCategory {
 
 export const skillCategories: SkillCategory[] = [
   {
-    title: "Udvikling & Programmering",
+    title: "PMO & Projektledelse",
     icon: Code2,
     color: "text-blue-500",
-    description: "Moderne webudvikling, frontend-arkitektur og interaktive systemer.",
+    description: "Project coordination, governance, reporting, and stakeholder-driven execution.",
     skills: [
-      "TypeScript",
-      "JavaScript (ES6+)",
-      "React",
-      "Tailwind CSS",
-      "Python",
-      "SQL & Databaser",
-      "Three.js (WebGL)",
-      "HTML5 & CSS3",
-      "Git & GitHub"
+      "PRINCE2 Foundation & Practitioner",
+      "Agile Project Management",
+      "Stakeholder Management",
+      "Azure DevOps Governance",
+      "Reporting & Dashboarding",
+      "Project Coordination",
+      "Change & Process Support"
     ]
   },
   {
-    title: "Dataanalyse & Systemer",
+    title: "Data, BI & Analyse",
     icon: Database,
     color: "text-emerald-500",
-    description: "Datavalidering, fejlretning og håndtering af komplekse datasæt.",
+    description: "Turning data into decisions through analysis, dashboards, and business insight.",
     skills: [
-      "Avanceret Excel",
-      "Datamodellering",
-      "Fejlretning i stordata",
-      "KPI & Budgetstyring",
-      "REST API'er",
-      "Sagsrekonstruktion",
-      "Kvalitetssikring"
+      "Power BI",
+      "Data Analysis",
+      "BI & KPI reporting",
+      "Excel Modelling",
+      "ProjectFlow Reporting",
+      "Data-driven Decision Support",
+      "Process Visualization"
     ]
   },
   {
-    title: "Digitalisering & Strategi",
+    title: "Digitalisering & AI",
     icon: Cpu,
     color: "text-amber-500",
-    description: "IT-strategi, digital omstilling og bindeled mellem forretning og teknik.",
+    description: "Digital transformation and business-technology alignment with a practical AI lens.",
     skills: [
-      "Kandidat: Digital Transformation (RUC)",
-      "Bachelor: Informatik & Virksomhedsstudier (RUC)",
       "Digital Transformation",
-      "IT-strategi & Ledelse",
-      "UX/UI Research",
-      "Forretningsanalyse",
-      "Procesoptimering",
-      "Onboarding & Oplæring",
-      "Systemisk tænkning"
+      "AI & Generative AI",
+      "Technology Strategy",
+      "Business & IT Alignment",
+      "Process Optimization",
+      "Cybersecurity",
+      "IT Governance"
     ]
   },
   {
-    title: "Formidling & Sprog",
+    title: "Sprog & Kommunikation",
     icon: Languages,
     color: "text-purple-500",
-    description: "Præcis tolkning, relationsopbygning og professionel etik.",
+    description: "Clear communication, cross-cultural collaboration, and service mindset.",
     skills: [
-      "Dansk (Modersmål)",
-      "Engelsk (Flydende)",
-      "Professionel tolkning",
-      "Tværfaglig dialog",
-      "Empatisk ledelse",
-      "Konfliktnedtrapning",
-      "Præsentationsteknik"
+      "Danish (Native)",
+      "English (Fluent)",
+      "Arabic (Fluent)",
+      "German (Working proficiency)",
+      "Professional Communication",
+      "Stakeholder Engagement",
+      "Documentation & Presentation"
     ]
   }
 ];
@@ -96,31 +92,31 @@ export default function SkillsSection() {
             <div className="p-1.5 rounded-md bg-primary/15 text-primary">
               <GraduationCap className="w-4 h-4" />
             </div>
-            <span>Akademisk IT-Uddannelsesfundament</span>
+            <span>Academic foundation & professional positioning</span>
           </div>
           <Badge variant="outline" className="border-primary/40 text-primary text-xs font-semibold">
-            RUC
+            RUC & Zealand
           </Badge>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
           <div className="p-3 rounded-lg bg-background/80 border border-border/60 space-y-1">
             <div className="flex justify-between items-baseline">
-              <span className="text-xs font-bold text-foreground">Kandidat i Digital Transformation</span>
-              <span className="text-[11px] font-mono text-muted-foreground">Start 2026</span>
+              <span className="text-xs font-bold text-foreground">MSc Digital Transformation</span>
+              <span className="text-[11px] font-mono text-muted-foreground">2026 - 2028</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Roskilde Universitet (RUC) — Fokus på IT-strategi, digital procesoptimering, socioteknisk systemdesign og teknologiledelse.
+              Roskilde University (RUC) — Focus on digital transformation, technology strategy, and change-led business development.
             </p>
           </div>
 
           <div className="p-3 rounded-lg bg-background/80 border border-border/60 space-y-1">
             <div className="flex justify-between items-baseline">
-              <span className="text-xs font-bold text-foreground">Bachelor i Informatik & Virksomhedsstudier</span>
-              <span className="text-[11px] font-mono text-muted-foreground">2021 - 2024</span>
+              <span className="text-xs font-bold text-foreground">Professionsbachelor i Økonomi & IT</span>
+              <span className="text-[11px] font-mono text-muted-foreground">2022 - 2026</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Roskilde Universitet (RUC) — Tværfaglig kobling af datalogi, programmering (Python, JavaScript, SQL), datamodellering, forretningsøkonomi og UX.
+              Zealand – practical business and IT education combining economics, project work, data analysis, and digital systems.
             </p>
           </div>
         </div>

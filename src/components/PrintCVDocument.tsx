@@ -13,7 +13,7 @@ export default function PrintCVDocument() {
       <header className="border-b-2 border-slate-900 pb-3 mb-4">
         <div className="flex justify-between items-baseline">
           <h1 className="text-3xl font-bold tracking-tight text-slate-950 font-serif">
-            Can Kurt
+            Nassim Hassani
           </h1>
           <span className="text-xs font-semibold text-slate-600 tracking-wider uppercase">
             Curriculum Vitae
@@ -21,19 +21,19 @@ export default function PrintCVDocument() {
         </div>
         
         <p className="text-sm font-semibold text-slate-800 mt-1">
-          Kandidatstuderende i Digital Transformation & IT-konsulent
+          Digital transformation MSc student • PMO / Data & AI / Business-Technology bridge
         </p>
 
         <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-[8.5pt] text-slate-600 font-medium">
-          <span>København, Danmark</span>
+          <span>Copenhagen</span>
           <span>•</span>
-          <span>+45 28 70 12 13</span>
+          <span>+45 24 77 07 84</span>
           <span>•</span>
-          <span>cankurtcvr@gmail.com</span>
+          <span>naselh01@gmail.com</span>
           <span>•</span>
-          <span>linkedin.com/in/canxkurt</span>
+          <span>linkedin.com/in/nassim-hassani-63835a220</span>
           <span>•</span>
-          <span>github.com/CanKurtcvr</span>
+          <span>github.com/NassimElH01</span>
         </div>
       </header>
 
@@ -43,7 +43,7 @@ export default function PrintCVDocument() {
           Profil & Fagligt Fokus
         </h2>
         <p className="text-[9pt] text-slate-800 text-justify leading-relaxed">
-          Ambitiøs IT-konsulent og kandidatstuderende med en stærk profil i krydsfeltet mellem digitalisering, dataanalyse og forretningsprocesser. Dokumenteret erfaring fra komplekse datasaneringsprojekter i den finansielle sektor (Danske Bank / EY), praktisk erfaring med moderne webarkitektur samt veludviklede formidlingsevner og situationsfornemmelse opbygget gennem certificeret tolkevirksomhed og omsorgsarbejde.
+          Digital transformation student and project-oriented professional with a business-technology profile spanning PMO, data analysis, Power BI, AI/digitalisation, and process improvement. Experienced in cross-functional project support, stakeholder coordination, governance, and reporting. Brings strong communication skills, analytical thinking, and an ability to connect strategic digital initiatives to operational execution.
         </p>
       </section>
 

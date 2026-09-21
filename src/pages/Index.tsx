@@ -79,8 +79,8 @@ const Index = () => {
         </main>
 
         <footer className="border-t border-border py-6 px-8 text-center text-xs sm:text-sm text-muted-foreground space-y-1">
-          <p>© {new Date().getFullYear()} Can Kurt</p>
-          <p className="text-xs text-muted-foreground/70">Kandidatstuderende i Digital Transformation · Roskilde Universitet</p>
+          <p>© {new Date().getFullYear()} Nassim Hassani</p>
+          <p className="text-xs text-muted-foreground/70">MSc Digital Transformation student · Roskilde University</p>
         </footer>
       </div>
 

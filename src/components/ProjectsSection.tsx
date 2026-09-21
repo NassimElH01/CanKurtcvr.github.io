@@ -48,6 +48,7 @@ export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionPro
     "Alle",
     "FinTech & Dataanalyse",
     "Digital Transformation",
+    "AI & Data Analytics",
     "Legal Tech & AI",
     "Full Stack & Web App",
   ];

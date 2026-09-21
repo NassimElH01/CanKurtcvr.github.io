@@ -13,133 +13,111 @@ export interface CVItem {
 }
 
 export const cvItems: CVItem[] = [
-  // --- UDDANNELSER ---
   {
-    id: "ruc-kandidat",
-    title: "Kandidat i Digital Transformation",
-    organization: "Roskilde Universitet (RUC)",
-    period: "Start Sep. 2026",
+    id: "ruc-master-digital-transformation",
+    title: "MSc in Digital Transformation",
+    organization: "Roskilde University (RUC)",
+    period: "2026 - 2028 (expected)",
     type: "Uddannelse",
     category: "uddannelse",
-    description: "Videreuddannelse med fokus på digital omstilling, teknologi, strategisk ledelse og it-systemer i organisationer.",
-    tags: ["Digital Transformation", "It-strategi", "RUC"],
+    description: "Graduate study focused on digital transformation, technology strategy, data and business integration, governance, and organizational change.",
+    tags: ["Digital Transformation", "IT Strategy", "RUC", "Leadership"],
     bullets: [
-      "Strategisk planlægning og styring af digitale omstillingsprocesser i private og offentlige organisationer.",
-      "Analyse og integration af komplekse IT-systemer og forretningsprocesser.",
-      "Teknologiledelse, UX og socio-teknisk systemdesign."
+      "Exploring digital transformation in complex organizations with focus on strategy, governance, and technology adoption.",
+      "Developing a bridge between business needs, process change, and digital capability building.",
+      "Strengthening analytical and strategic thinking within an IT and business context."
     ]
   },
   {
-    id: "ruc-bachelor",
-    title: "Bachelor i Informatik og Virksomhedsstudier",
-    organization: "Roskilde Universitet",
-    period: "Sep. 2021 - Jun. 2024",
+    id: "zealand-professionsbachelor",
+    title: "Professionsbachelor i Økonomi & IT",
+    organization: "Zealand – Sjællands Erhvervsuddannelser",
+    period: "2022 - 2026",
     type: "Uddannelse",
     category: "uddannelse",
-    description: "Tværfaglig uddannelse der kombinerer datalogi, programmering, databasedesign, regnskab og organisatorisk udvikling.",
-    tags: ["Informatik", "Virksomhedsstudier", "UX-design", "Dataanalyse"],
+    description: "Applied business and IT degree combining business processes, digitalization, project management, cybersecurity, and data analysis.",
+    tags: ["Økonomi", "IT", "Dataanalyse", "Cybersecurity", "Projektledelse"],
     bullets: [
-      "Grundlæggende programmering (Python, JavaScript, SQL) og datamodellering.",
-      "Projektstyring, bogholderi, økonomistyring og forretningsforståelse.",
-      "Menneske-maskine interaktion (HCI), UX-design og brugerresearch."
+      "Built strong foundations in process optimization, digital tools, and technology-enabled business operations.",
+      "Worked with business analysis, data-driven decision-making, and practical system understanding.",
+      "Combined technical and commercial thinking through project work and applied study assignments."
     ]
   },
-
-  // --- IT ERFARING ---
   {
-    id: "danske-bank-it",
-    title: "IT-konsulent (fuldtid)",
-    organization: "Danske Bank (via EY / M Networks)",
-    period: "Jun. 2022 - Dec. 2023",
+    id: "royal-unibrew-pmo",
+    title: "Junior Project Manager / PMO Intern",
+    organization: "Royal Unibrew",
+    period: "2025",
     type: "Erfaring",
     category: "it",
-    description: "Ansvarlig for fejlretning i komplekse kundesager, analyse af store datamængder i Excel og onboarding i forbindelse med gældssanering og inkasso-oprydning.",
-    tags: ["Dataanalyse", "Fejlretning", "Excel", "Onboarding"],
+    description: "Supported cross-functional IT/OT and cybersecurity projects with governance, stakeholder coordination, reporting, and Power BI-driven project insight.",
+    tags: ["Project Management", "PMO", "Power BI", "Azure DevOps", "Stakeholder Management"],
     bullets: [
-      "Sagsrekonstruktion af komplekse økonomiske forløb gennem analyse af juridiske aktstykker og bankudskrifter.",
-      "Håndtering og validering af data for mere end 400 kunder i avancerede Excel-modeller.",
-      "Udarbejdelse af præsentationer og onboarding af nye konsulenter i teamet (floorwalker)."
+      "Coordinated project reporting, meeting structure, and stakeholder communication across technology and operations teams.",
+      "Worked with Azure DevOps governance, project tracking, and process improvement for digital initiatives.",
+      "Created Power BI dashboards and project reporting from ProjectFlow to improve transparency and business follow-up."
     ]
   },
-
-  // --- PLEJE & OMSORG ---
   {
-    id: "kaerbo-omsorgscenter",
-    title: "Plejehjælper",
-    organization: "Kærbo Omsorgscenter, Ishøj",
-    period: "Jun. 2026 - Sep. 2026",
+    id: "zealand-it-student-assistant",
+    title: "IT Medarbejder / Student Assistant",
+    organization: "Zealand IT",
+    period: "2025 - 2026",
     type: "Erfaring",
-    category: "omsorg",
-    description: "Hjælp til ældre borgere med daglige rutiner, personlig pleje, aktivisering og digital journalføring.",
-    tags: ["Ældrepleje", "Journalføring", "Omsorg", "Empati"],
+    category: "it",
+    description: "Delivered user support, digital systems operations, and documentation support across Microsoft 365 and administrative IT processes.",
+    tags: ["IT Support", "Microsoft 365", "Documentation", "Digital Systems"],
     bullets: [
-      "Strukturering af daglige plejerutiner og skabelse af trygge rammer for beboerne.",
-      "Præcis journalføring og tværfaglig overlevering til sygeplejersker og kollegaer.",
-      "Høj grad af situationsfornemmelse, tålmodighed og menneskelig kontakt."
+      "Provided day-to-day IT support and troubleshooting for staff and users across digital systems.",
+      "Maintained documentation, procedural support, and efficient handling of internal digital workflows.",
+      "Contributed to the smooth operation of Microsoft 365 and shared business tools in a practical support environment."
     ]
   },
   {
-    id: "forsorgshjemmet-absalon",
-    title: "Omsorgsmedarbejder (Vikariat)",
-    organization: "Forsorgshjemmet Absalon",
-    period: "Jan. 2024 - Nuværende",
+    id: "royal-unibrew-bachelor-project",
+    title: "Bachelorprojekt: OT Cyber Security & Data-Driven Project Management",
+    organization: "Royal Unibrew",
+    period: "2025 - 2026",
     type: "Erfaring",
-    category: "omsorg",
-    description: "Yder administrativ støtte og personlig omsorg til socialt udsatte borgere og håndterer komplekse sociale situationer med ro og empati.",
-    tags: ["Socialt arbejde", "Administration", "Empati", "Konflikthåndtering"],
+    category: "it",
+    description: "Bachelor project exploring OT cybersecurity and data-driven project management in a production-focused industrial setting.",
+    tags: ["Cybersecurity", "OT", "Data-driven PM", "Industrial IT"],
     bullets: [
-      "Relationsarbejde med borgere i sårbare og uforudsigelige livssituationer.",
-      "Konfliktnedtrapning og fastholdelse af rolige, trygge rammer.",
-      "Dokumentation og administrativ opfølgning i fagsystemer."
-    ]
-  },
-
-  // --- ØVRIGE ERFARINGER ---
-  {
-    id: "tolk-danmark",
-    title: "Tolk (Vikariat)",
-    organization: "Tolk Danmark",
-    period: "Feb. 2024 - Nuværende",
-    type: "Erfaring",
-    category: "omsorg",
-    description: "Formidler præcis tolkning og kommunikation ved kritiske møder med fokus på etik, diskretion og professionalisme.",
-    tags: ["Sprog", "Kommunikation", "Etik", "Diskretion"],
-    bullets: [
-      "Simultan- og konsekutiv tolkning mellem parter i offentlige og private instanser.",
-      "Sikring af fuldstændig neutralitet, tavshedspligt og præcision i terminologi.",
-      "Hurtig omstillingsevne til skiftende faglige kontekster."
+      "Examined cyber risk and governance in operational technology environments alongside digital transformation initiatives.",
+      "Connected project management practice with data and reporting to improve decision support in complex operations.",
+      "Produced an applied research project linking security, process thinking, and digital programme management."
     ]
   },
   {
-    id: "ole-romer-skole",
-    title: "Pædagogmedhjælper",
-    organization: "Ole-Rømer skolen - Høje Taastrup",
-    period: "Aug. 2019 - Okt. 2021",
-    type: "Erfaring",
-    category: "omsorg",
-    description: "Understøttede undervisning og agerede støttepædagog for elever med faglige og sociale udfordringer.",
-    tags: ["Undervisning", "Pædagogik", "Klasseledelse"],
-    bullets: [
-      "Individuel faglig støtte og inklusionsarbejde i folkeskoleregi.",
-      "Tæt samarbejde med lærere, forældre og ledelse omkring elevernes trivsel."
-    ]
-  },
-  {
-    id: "red-barnet-ungdom",
-    title: "Lektiehjælper",
-    organization: "Red Barnet Ungdom",
-    period: "Mar. 2025 - Nuv.",
+    id: "volunteer-fire-watch",
+    title: "Volunteer Fire Watch",
+    organization: "CNS Security",
+    period: "Selected experience",
     type: "Frivilligt arbejde",
     category: "omsorg",
-    description: "Frivillig mentor med fokus på faglig indlæring, motivation og selvtillid hos skoleelever.",
-    tags: ["Frivilligt", "Mentorskab", "Formidling"],
+    description: "Volunteer support in a safety-focused environment requiring vigilance, coordination, and professionalism under operational conditions.",
+    tags: ["Safety", "Coordination", "Responsibility"],
     bullets: [
-      "Styrkelse af elevens faglige niveau i matematik og sprogfag.",
-      "Opbygning af gode studievaner og motivation for skolegang."
+      "Supported fire watch and safety monitoring tasks in a structured operational setting.",
+      "Maintained focus, communication, and situational awareness in high-responsibility environments."
+    ]
+  },
+  {
+    id: "carecompagniet-contact",
+    title: "Contact Person / Supporting Role",
+    organization: "CareCompagniet",
+    period: "Selected experience",
+    type: "Frivilligt arbejde",
+    category: "omsorg",
+    description: "Supportive contact role focused on communication, trust, and practical coordination in a care-oriented setting.",
+    tags: ["Communication", "Care", "Trust"],
+    bullets: [
+      "Acted as a reliable point of contact for people needing guidance, coordination, and practical support.",
+      "Built strong interpersonal communication and empathy in care-related situations."
     ]
   }
 ];
 
 export function getCVItemById(id: string): CVItem | undefined {
-  return cvItems.find(item => item.id === id);
+  return cvItems.find((item) => item.id === id);
 }
