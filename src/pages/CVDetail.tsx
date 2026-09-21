@@ -287,6 +287,28 @@ export default function CVDetail() {
                 </ul>
               </CardContent>
             </Card>
+            {cvData.personalCompetencies && cvData.personalCompetencies.length > 0 && (
+              <Card className="border-l-4 border-l-accent">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <User className="h-5 w-5 text-accent" />
+                    Personlige kompetencer
+                  </CardTitle>
+                  <CardDescription>
+                    Kompetencer og arbejdsstyrker, jeg har udviklet gennem dette arbejde.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {cvData.personalCompetencies.map((competency) => (
+                      <Badge key={competency} variant="outline" className="px-3 py-1.5 text-sm">
+                        {competency}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         ) : (
           <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-12 text-center flex flex-col items-center justify-center min-h-[250px] bg-slate-50/50 dark:bg-slate-900/20 mt-8">

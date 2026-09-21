@@ -147,6 +147,12 @@ export default function PrintCVDocument() {
                   ))}
                 </ul>
               )}
+              {item.personalCompetencies && item.personalCompetencies.length > 0 && (
+                <p className="text-[8pt] text-slate-700 leading-snug mt-1">
+                  <strong>Personlige kompetencer:</strong>{" "}
+                  {item.personalCompetencies.join(" · ")}
+                </p>
+              )}
             </article>
           ))}
         </div>

@@ -10,6 +10,7 @@ export interface CVItem {
   description: string;
   tags: string[];
   bullets?: string[];
+  personalCompetencies?: string[];
 }
 
 export const cvItems: CVItem[] = [
@@ -56,6 +57,12 @@ export const cvItems: CVItem[] = [
       "Coordinated project reporting, meeting structure, and stakeholder communication across technology and operations teams.",
       "Worked with Azure DevOps governance, project tracking, and process improvement for digital initiatives.",
       "Created Power BI dashboards and project reporting from ProjectFlow to improve transparency and business follow-up."
+    ],
+    personalCompetencies: [
+      "Struktureret og organiseret i komplekse projektforløb",
+      "Stærk i samarbejde på tværs af IT, OT og forretning",
+      "Analytisk, nysgerrig og god til at omsætte data til handling",
+      "Ansvarsbevidst i opfølgning, koordinering og kommunikation"
     ]
   },
   {
@@ -71,6 +78,12 @@ export const cvItems: CVItem[] = [
       "Provided day-to-day IT support and troubleshooting for staff and users across digital systems.",
       "Maintained documentation, procedural support, and efficient handling of internal digital workflows.",
       "Contributed to the smooth operation of Microsoft 365 and shared business tools in a practical support environment."
+    ],
+    personalCompetencies: [
+      "Tålmodig og serviceminded i mødet med brugere",
+      "God til at fejlfinde og bevare overblikket under pres",
+      "Pålidelig i dokumentation og opfølgning",
+      "Fleksibel og hurtig til at lære nye systemer"
     ]
   },
   {
@@ -85,6 +98,12 @@ export const cvItems: CVItem[] = [
     bullets: [
       "Leverede stabil og grundig service med fokus på kvalitet og kundetilfredshed.",
       "Planlagde og gennemførte opgaver selvstændigt med sans for detaljer og effektivitet."
+    ],
+    personalCompetencies: [
+      "Grundig og kvalitetsbevidst",
+      "Selvstændig og ansvarsfuld i planlægningen af opgaver",
+      "Stabil, punktlig og professionel over for kunder",
+      "Effektiv uden at gå på kompromis med kvaliteten"
     ]
   },
   {
@@ -99,6 +118,12 @@ export const cvItems: CVItem[] = [
     bullets: [
       "Bidrog til et positivt og struktureret miljø for medlemmer og aktiviteter.",
       "Udviklede stærke samarbejds- og kommunikationsevner i en social og dynamisk hverdag."
+    ],
+    personalCompetencies: [
+      "Disciplineret og motiverende i et aktivt miljø",
+      "Samarbejdsorienteret og god til at skabe positiv energi",
+      "Kommunikerer respektfuldt med forskellige mennesker",
+      "Ansvarsbevidst og løsningsorienteret"
     ]
   },
   {
@@ -128,6 +153,11 @@ export const cvItems: CVItem[] = [
     bullets: [
       "Supported fire watch and safety monitoring tasks in a structured operational setting.",
       "Maintained focus, communication, and situational awareness in high-responsibility environments."
+    ],
+    personalCompetencies: [
+      "Opmærksom og rolig i situationer med ansvar",
+      "Pålidelig i sikkerheds- og beredskabsopgaver",
+      "God situationsfornemmelse og respekt for procedurer"
     ]
   },
   {
@@ -142,6 +172,12 @@ export const cvItems: CVItem[] = [
     bullets: [
       "Acted as a reliable point of contact for people needing guidance, coordination, and practical support.",
       "Built strong interpersonal communication and empathy in care-related situations."
+    ],
+    personalCompetencies: [
+      "Empatisk og tillidsskabende i relationer",
+      "Tålmodig og god til at lytte",
+      "Ansvarsfuld i opfølgning og støtte",
+      "Stærk i personlig kommunikation"
     ]
   }
 ];
