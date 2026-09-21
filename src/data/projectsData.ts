@@ -18,6 +18,41 @@ export interface ProjectItem {
 
 export const projectsData: ProjectItem[] = [
   {
+    id: "24support-julekalender",
+    title: "24Support Julekalender 2026",
+    shortTitle: "Interaktiv julekalender",
+    category: "Freelance & Webudvikling",
+    description: "En komplet digital julekalender udviklet som en selvstændig HTML/CSS/JavaScript-løsning for 24Support med 24 interaktive låger, dansk datostyring, keyboard-navigation og et separat administratormodul til opdatering af spørgsmål.",
+    tags: ["Freelance", "HTML", "CSS", "JavaScript", "Accessibility", "Responsive Design"],
+    highlights: [
+      "Designede en skalerbar 16:9-oplevelse med danske byhuse, animationer, snefald og interaktioner",
+      "Implementerede dato- og localStorage-logik, så låger åbner korrekt og huskes pr. bruger",
+      "Leverede et lokalt admin-værktøj, der genererer den offentlige kalenderfil uden backend"
+    ],
+    actionText: "Åbn julekalender",
+    href: "/freelance/24support-julekalender/julekalender.html",
+    githubUrl: "https://github.com/NassimElH01",
+    iconName: "Sparkles",
+    iconColor: "text-red-500"
+  },
+  {
+    id: "ss-rengoringservice-website",
+    title: "S&S Rengøringsservice Website",
+    shortTitle: "S&S hjemmeside",
+    category: "Freelance & Webudvikling",
+    description: "Freelance webarbejde for S&S Rengøringsservice med fokus på en enkel, professionel og mobilvenlig hjemmeside, der præsenterer virksomhedens serviceydelser tydeligt.",
+    tags: ["Freelance", "Webdesign", "HTML/CSS", "Responsive Design", "Business Website"],
+    highlights: [
+      "Omsatte virksomhedens behov til en klar og serviceorienteret webstruktur",
+      "Arbejdede med visuel præsentation, indhold og en mobilvenlig brugeroplevelse",
+      "Forbandt virksomhedens serviceprofil med en mere professionel digital tilstedeværelse"
+    ],
+    actionText: "Se projektprofil",
+    githubUrl: "https://github.com/NassimElH01",
+    iconName: "Workflow",
+    iconColor: "text-emerald-500"
+  },
+  {
     id: "royal-unibrew-project",
     title: "Royal Unibrew OT Cyber Security & Data-Driven PMO",
     shortTitle: "OT Security & PMO Case",

@@ -46,6 +46,7 @@ export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionPro
 
   const categories = [
     "Alle",
+    "Freelance & Webudvikling",
     "FinTech & Dataanalyse",
     "Digital Transformation",
     "AI & Data Analytics",
