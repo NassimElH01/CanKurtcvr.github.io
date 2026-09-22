@@ -16,6 +16,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Language } from "@/lib/translations";
 
 interface NewsItem {
   id: string;
@@ -189,7 +190,7 @@ function extractDomain(url: string): string {
   }
 }
 
-export default function NewsSection() {
+export default function NewsSection({ language = "da" }: { language?: Language }) {
   const [selectedCategory, setSelectedCategory] = useState<NewsCategory>("trending");
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -280,22 +281,24 @@ export default function NewsSection() {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-display font-bold text-foreground">
-              Teknologi & Tech-Nyheder
+              {language === "da" ? "Teknologi & Tech-Nyheder" : "Technology & Tech News"}
             </h2>
             {isLive ? (
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                 <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Live Feed
+                {language === "da" ? "Live Feed" : "Live feed"}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
                 <AlertCircle className="size-3" />
-                Kurateret
+                {language === "da" ? "Kurateret" : "Curated"}
               </span>
             )}
           </div>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Realtids overskrifter og dybdegående artikler om digitalisering, AI og softwarearkitektur.
+            {language === "da"
+              ? "Realtidsoverskrifter og dybdegående artikler om digitalisering, AI og softwarearkitektur."
+              : "Real-time headlines and in-depth articles about digitalisation, AI, and software architecture."}
           </p>
         </div>
 
@@ -308,7 +311,7 @@ export default function NewsSection() {
             className="gap-2 rounded-full border-border/80 hover:bg-muted font-medium text-xs sm:text-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-primary ${loading ? "animate-spin" : ""}`} />
-            <span>Opdater</span>
+            <span>{language === "da" ? "Opdater" : "Refresh"}</span>
           </Button>
         </div>
       </div>
@@ -345,7 +348,7 @@ export default function NewsSection() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Filtrer overskrifter..."
+            placeholder={language === "da" ? "Filtrer overskrifter..." : "Filter headlines..."}
             className="w-full pl-8 pr-3 py-1.5 text-xs rounded-full border border-border/80 bg-background/80 placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>

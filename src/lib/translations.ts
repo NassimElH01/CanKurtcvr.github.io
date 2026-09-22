@@ -15,6 +15,39 @@ export const translations = {
       weather: "Vejret",
       news: "Nyheder"
     },
+    cvSection: {
+      title: "Erfaring & Uddannelsesforløb",
+      description: "Ambitiøs profil med en stærk og alsidig baggrund inden for IT, dataanalyse og formidling. Klik på et kort for at se detaljer, eller hent det komplette CV som PDF.",
+      print: "Hent / Print CV (PDF)",
+      all: "Alle",
+      it: "IT & Digitalisering",
+      education: "Uddannelse",
+      care: "Omsorg & Formidling"
+    },
+    projectsSection: {
+      title: "Projekter & Tekniske Showcases",
+      description: "Udforsk mine interaktive løsninger inden for freelance webudvikling, digital transformation, data, AI og moderne webapplikationer.",
+      all: "Alle",
+      interactive: "Interaktiv",
+      featured: "Fremhævet",
+      highlights: "Tekniske højdepunkter:",
+      github: "Se kildekode på GitHub",
+      openDemo: "Åbn interaktiv demo"
+    },
+    weatherSection: {
+      title: "Vejret i København",
+      subtitle: "Live data fra Open-Meteo API",
+      refresh: "Opdater",
+      current: "Aktuel temperatur",
+      forecast: "5-dages vejrudsigt",
+      error: "Vejrdata kunne ikke indlæses"
+    },
+    gamesSection: {
+      title: "Vælg dit spil",
+      description: "Vælg en kort udfordring, eller gå på opdagelse i Ascension Cards.",
+      back: "Tilbage til spil",
+      play: "Spil nu →"
+    },
     sectionTitles: {
       cv: "Erfaring & Uddannelsesforløb",
       cvDescription:
@@ -55,6 +88,39 @@ export const translations = {
       games: "Games & Arcade",
       weather: "Weather",
       news: "News"
+    },
+    cvSection: {
+      title: "Experience & Education",
+      description: "Ambitious profile with a broad background in IT, data analysis, and communication. Select a card for details, or download the complete CV as a PDF.",
+      print: "Download / Print CV (PDF)",
+      all: "All",
+      it: "IT & Digitalisation",
+      education: "Education",
+      care: "Care & Communication"
+    },
+    projectsSection: {
+      title: "Projects & Technical Showcases",
+      description: "Explore my interactive solutions across freelance web development, digital transformation, data, AI, and modern web applications.",
+      all: "All",
+      interactive: "Interactive",
+      featured: "Featured",
+      highlights: "Technical highlights:",
+      github: "View source on GitHub",
+      openDemo: "Open interactive demo"
+    },
+    weatherSection: {
+      title: "Weather in Copenhagen",
+      subtitle: "Live data from the Open-Meteo API",
+      refresh: "Refresh",
+      current: "Current temperature",
+      forecast: "5-day forecast",
+      error: "Could not load weather data"
+    },
+    gamesSection: {
+      title: "Choose your game",
+      description: "Pick a short challenge or explore Ascension Cards.",
+      back: "Back to games",
+      play: "Play now →"
     },
     sectionTitles: {
       cv: "Experience & Education",

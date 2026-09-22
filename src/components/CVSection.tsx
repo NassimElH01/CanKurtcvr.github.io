@@ -7,20 +7,22 @@ import { cvItems, CVCategory } from "@/data/cvData";
 import SkillsSection from "./SkillsSection";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Briefcase, GraduationCap, HeartHandshake, Printer } from "lucide-react";
+import { Language, translations } from "@/lib/translations";
 
-export default function CVSection() {
+export default function CVSection({ language = "da" }: { language?: Language }) {
+  const t = translations[language].cvSection;
   const [selectedCategory, setSelectedCategory] = useState<CVCategory>("all");
 
   const categories = useMemo(() => [
-    { id: "all" as CVCategory, label: "Alle", icon: Sparkles, count: cvItems.length },
+    { id: "all" as CVCategory, label: t.all, icon: Sparkles, count: cvItems.length },
     { 
       id: "it" as CVCategory, 
-      label: "IT & Digitalisering", 
+      label: t.it,
       icon: Briefcase, 
       count: cvItems.filter(i => i.category === "it" || i.tags.includes("Informatik") || i.tags.includes("Digital Transformation")).length 
     },
-    { id: "uddannelse" as CVCategory, label: "Uddannelse", icon: GraduationCap, count: cvItems.filter(i => i.category === "uddannelse").length },
-    { id: "omsorg" as CVCategory, label: "Omsorg & Formidling", icon: HeartHandshake, count: cvItems.filter(i => i.category === "omsorg").length },
+    { id: "uddannelse" as CVCategory, label: t.education, icon: GraduationCap, count: cvItems.filter(i => i.category === "uddannelse").length },
+    { id: "omsorg" as CVCategory, label: t.care, icon: HeartHandshake, count: cvItems.filter(i => i.category === "omsorg").length },
   ], []);
 
   const filteredItems = useMemo(() => {
@@ -34,16 +36,16 @@ export default function CVSection() {
   return (
     <section id="cv" className="py-6 space-y-12">
       {/* Faglige Kompetencer */}
-      <SkillsSection />
+      <SkillsSection language={language} />
 
       {/* Profil & Erfaring */}
       <div className="space-y-6">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <h2 className="text-3xl font-display font-bold text-foreground">
-            Erfaring & Uddannelsesforløb
+            {t.title}
           </h2>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-            Ambitiøs profil med en stærk og alsidig baggrund inden for IT, dataanalyse og formidling. Klik på et kort for at dykke ned i detaljerne, eller hent det komplette CV som PDF.
+            {t.description}
           </p>
           <div className="pt-1">
             <Button
@@ -53,7 +55,7 @@ export default function CVSection() {
               className="gap-2 rounded-full border-primary/30 hover:border-primary text-xs md:text-sm hover:bg-primary/5 shadow-xs"
             >
               <Printer className="w-3.5 h-3.5 text-primary" />
-              <span>Hent / Print CV (PDF)</span>
+              <span>{t.print}</span>
             </Button>
           </div>
         </div>

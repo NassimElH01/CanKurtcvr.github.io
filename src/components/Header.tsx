@@ -48,7 +48,7 @@ const Header = ({ onPrintCV, language = "da", onLanguageChange }: HeaderProps = 
         }} />
       </div>
 
-      <div className="relative z-20 flex justify-end items-center gap-2 px-6 pt-4 max-w-4xl mx-auto">
+      <div className="relative z-20 flex flex-wrap justify-end items-center gap-2 px-3 sm:px-6 pt-4 max-w-4xl mx-auto">
         <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 p-1">
           {(["da", "en"] as const).map((lang) => (
             <button

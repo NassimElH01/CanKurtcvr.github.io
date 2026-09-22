@@ -16,8 +16,15 @@ type TabType = "cv" | "weather" | "news" | "games" | "projects";
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabType>("cv");
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
-  const [language, setLanguage] = useState<Language>("da");
+  const [language, setLanguage] = useState<Language>(() => {
+    const savedLanguage = window.localStorage.getItem("profile-language");
+    return savedLanguage === "en" ? "en" : "da";
+  });
   const t = translations[language];
+
+  useEffect(() => {
+    window.localStorage.setItem("profile-language", language);
+  }, [language]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -62,7 +69,7 @@ const Index = () => {
           id={`panel-${activeTab}`}
           role="tabpanel"
           aria-labelledby={`tab-${activeTab}`}
-          className="p-4 sm:p-6 md:p-8"
+          className="p-3 sm:p-6 md:p-8"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -72,16 +79,16 @@ const Index = () => {
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25 }}
             >
-              {activeTab === "cv" && <CVSection />}
-              {activeTab === "projects" && <ProjectsSection onNavigateToGame={handleNavigateToGame} />}
-              {activeTab === "games" && <GamesSection selectedGame={selectedGame} onSelectGame={setSelectedGame} />}
-              {activeTab === "weather" && <WeatherSection />}
-              {activeTab === "news" && <NewsSection />}
+              {activeTab === "cv" && <CVSection language={language} />}
+              {activeTab === "projects" && <ProjectsSection language={language} onNavigateToGame={handleNavigateToGame} />}
+              {activeTab === "games" && <GamesSection language={language} selectedGame={selectedGame} onSelectGame={setSelectedGame} />}
+              {activeTab === "weather" && <WeatherSection language={language} />}
+              {activeTab === "news" && <NewsSection language={language} />}
             </motion.div>
           </AnimatePresence>
         </main>
 
-        <footer className="border-t border-border py-6 px-8 text-center text-xs sm:text-sm text-muted-foreground space-y-1">
+        <footer className="border-t border-border py-6 px-4 sm:px-8 text-center text-xs sm:text-sm text-muted-foreground space-y-1">
           <p>© {new Date().getFullYear()} Nassim Hassani</p>
           <p className="text-xs text-muted-foreground/70">{t.footer}</p>
         </footer>

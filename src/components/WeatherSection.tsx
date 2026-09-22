@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Cloud, Wind, RefreshCw, ThermometerSun, Sun, CloudRain, Snowflake } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Language, translations } from "@/lib/translations";
 
 interface WeatherData {
   current: {
@@ -25,7 +26,8 @@ const getWeatherIcon = (code: number) => {
   return Cloud;
 };
 
-const WeatherSection = () => {
+const WeatherSection = ({ language = "da" }: { language?: Language }) => {
+  const t = translations[language].weatherSection;
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +49,7 @@ const WeatherSection = () => {
         daily: data.daily
       });
     } catch (err) {
-      setError("Could not load weather data");
+      setError(t.error);
       console.error(err);
     } finally {
       setLoading(false);
@@ -66,8 +68,8 @@ const WeatherSection = () => {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-display font-bold text-foreground">Vejret i København</h2>
-          <p className="text-sm text-muted-foreground">Live data fra Open-Meteo API</p>
+          <h2 className="text-2xl font-display font-bold text-foreground">{t.title}</h2>
+          <p className="text-sm text-muted-foreground">{t.subtitle}</p>
         </div>
         <Button
           onClick={fetchWeather}
@@ -77,7 +79,7 @@ const WeatherSection = () => {
           className="gap-2"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          Opdater
+          {t.refresh}
         </Button>
       </div>
 
@@ -96,7 +98,7 @@ const WeatherSection = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-100 mb-1 font-medium">Aktuel temperatur</p>
+                <p className="text-sm text-blue-100 mb-1 font-medium">{t.current}</p>
                 <div className="text-5xl sm:text-6xl font-display font-bold">
                   {loading ? "--" : `${weather?.current.temperature}°C`}
                 </div>
@@ -113,8 +115,8 @@ const WeatherSection = () => {
 
           {/* 5-Day Forecast */}
           <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-foreground">5-dages vejrudsigt</h3>
-            <div className="grid grid-cols-5 gap-2 sm:gap-3">
+            <h3 className="text-lg font-display font-semibold mb-4 text-foreground">{t.forecast}</h3>
+            <div className="grid grid-cols-2 min-[420px]:grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
               {weather?.daily.time.slice(0, 5).map((date, index) => {
                 const dayName = new Date(date).toLocaleDateString("da-DK", { weekday: "short" });
                 const WeatherIcon = getWeatherIcon(weather.daily.weathercode[index]);

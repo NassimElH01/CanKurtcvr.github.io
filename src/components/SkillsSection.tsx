@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Code2, Database, Cpu, Languages, GraduationCap, BrainCircuit } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Language, translations } from "@/lib/translations";
 
 export interface SkillCategory {
   title: string;
@@ -105,15 +106,18 @@ export const skillCategories: SkillCategory[] = [
   }
 ];
 
-export default function SkillsSection() {
+export default function SkillsSection({ language = "da" }: { language?: Language }) {
+  const isDanish = language === "da";
   return (
     <div className="mb-12 space-y-6">
       <div className="text-center max-w-xl mx-auto space-y-2">
         <h3 className="text-2xl font-display font-bold text-foreground">
-          Faglige Kompetencer & Værktøjer
+          {isDanish ? "Faglige Kompetencer & Værktøjer" : "Professional Skills & Tools"}
         </h3>
         <p className="text-sm text-muted-foreground">
-          Et overblik over min tekniske værktøjskasse, analytiske profil og forretningsforståelse.
+          {isDanish
+            ? "Et overblik over min tekniske værktøjskasse, analytiske profil og forretningsforståelse."
+            : "An overview of my technical toolkit, analytical profile, and business understanding."}
         </p>
       </div>
 
@@ -124,7 +128,7 @@ export default function SkillsSection() {
             <div className="p-1.5 rounded-md bg-primary/15 text-primary">
               <GraduationCap className="w-4 h-4" />
             </div>
-            <span>Academic foundation & professional positioning</span>
+            <span>{isDanish ? "Akademisk fundament & professionel positionering" : "Academic foundation & professional positioning"}</span>
           </div>
           <Badge variant="outline" className="border-primary/40 text-primary text-xs font-semibold">
             RUC & Zealand
@@ -138,7 +142,9 @@ export default function SkillsSection() {
               <span className="text-[11px] font-mono text-muted-foreground">2026 - 2028</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Roskilde University (RUC) — Focus on digital transformation, technology strategy, and change-led business development.
+              {isDanish
+                ? "Roskilde Universitet (RUC) — fokus på digital transformation, teknologistrategi og forretningsudvikling."
+                : "Roskilde University (RUC) — focus on digital transformation, technology strategy, and change-led business development."}
             </p>
           </div>
 
@@ -148,7 +154,9 @@ export default function SkillsSection() {
               <span className="text-[11px] font-mono text-muted-foreground">2022 - 2026</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Zealand – practical business and IT education combining economics, project work, data analysis, and digital systems.
+              {isDanish
+                ? "Zealand – praktisk business- og IT-uddannelse med økonomi, projektarbejde, dataanalyse og digitale systemer."
+                : "Zealand – practical business and IT education combining economics, project work, data analysis, and digital systems."}
             </p>
           </div>
         </div>
@@ -164,7 +172,14 @@ export default function SkillsSection() {
                   <div className="p-1.5 rounded-md bg-muted">
                     <Icon className={`w-4 h-4 ${category.color}`} />
                   </div>
-                  <span>{category.title}</span>
+                  <span>{isDanish ? category.title : ({
+                    "PMO & Projektledelse": "PMO & Project Management",
+                    "Data, BI & Analyse": "Data, BI & Analytics",
+                    "Digitalisering & AI": "Digitalisation & AI",
+                    "Programmering & Web": "Programming & Web",
+                    "AI & Machine Learning": "AI & Machine Learning",
+                    "Sprog & Kommunikation": "Languages & Communication"
+                  }[category.title] || category.title)}</span>
                 </CardTitle>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {category.description}

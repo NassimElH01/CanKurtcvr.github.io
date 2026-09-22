@@ -5,6 +5,7 @@ import PongGame from "./games/PongGame";
 import SnakeGame from "./games/SnakeGame";
 import WebShooterGame from "./games/WebShooterGame";
 import { AscensionGame } from "./ascension/AscensionGame";
+import { Language, translations } from "@/lib/translations";
 
 const games = [
   { id: "ascension-cards", title: "Ascension Cards", description: "Turn daily habits into collectible cards, quests, and character progress.", icon: Gamepad2, tone: "from-amber-500/20 to-indigo-500/20" },
@@ -15,11 +16,13 @@ const games = [
 ] as const;
 
 interface GamesSectionProps {
+  language?: Language;
   selectedGame?: string | null;
   onSelectGame?: (gameId: string | null) => void;
 }
 
-export default function GamesSection({ selectedGame: controlledGame, onSelectGame }: GamesSectionProps = {}) {
+export default function GamesSection({ language = "da", selectedGame: controlledGame, onSelectGame }: GamesSectionProps = {}) {
+  const t = translations[language].gamesSection;
   const [internalGame, setInternalGame] = useState<string | null>(null);
   const selectedGame = controlledGame !== undefined ? controlledGame : internalGame;
   const setSelectedGame = (id: string | null) => {
@@ -52,7 +55,7 @@ export default function GamesSection({ selectedGame: controlledGame, onSelectGam
             onClick={() => setSelectedGame(null)}
             className="mb-6 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
-            <ArrowLeft className="h-4 w-4" /> Back to games
+            <ArrowLeft className="h-4 w-4" /> {t.back}
           </button>
           <h2 className="mb-2 text-3xl font-bold text-center">{game?.title}</h2>
           <p className="mb-8 text-center text-muted-foreground">{game?.description}</p>
@@ -69,9 +72,9 @@ export default function GamesSection({ selectedGame: controlledGame, onSelectGam
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
             <Gamepad2 className="h-7 w-7" />
           </div>
-          <h2 className="text-4xl font-bold">Choose your game</h2>
+          <h2 className="text-4xl font-bold">{t.title}</h2>
           <p className="mt-3 text-muted-foreground">
-            Pick a short challenge or enter Ascension Cards for a slower, more reflective journey.
+            {t.description}
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -85,7 +88,7 @@ export default function GamesSection({ selectedGame: controlledGame, onSelectGam
               <Icon className="mb-8 h-8 w-8 text-foreground transition group-hover:scale-110" />
               <h3 className="text-xl font-semibold">{title}</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
-              <span className="mt-6 inline-block text-sm font-semibold text-primary">Play now →</span>
+              <span className="mt-6 inline-block text-sm font-semibold text-primary">{t.play}</span>
             </button>
           ))}
         </div>

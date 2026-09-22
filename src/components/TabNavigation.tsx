@@ -21,8 +21,8 @@ const TabNavigation = ({ activeTab, onTabChange, language }: TabNavigationProps)
   ];
   return (
     <nav className="sticky top-0 z-40 bg-card/95 backdrop-blur-sm border-b border-border shadow-xs" aria-label="Hovednavigation">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex" role="tablist" aria-orientation="horizontal">
+      <div className="max-w-4xl mx-auto overflow-x-auto">
+        <div className="flex min-w-max overflow-x-auto" role="tablist" aria-orientation="horizontal">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -43,7 +43,7 @@ const TabNavigation = ({ activeTab, onTabChange, language }: TabNavigationProps)
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
-                <span className="truncate">{tab.label}</span>
+                <span className="whitespace-nowrap">{tab.label}</span>
                 
                 {isActive && (
                   <motion.div

@@ -24,6 +24,7 @@ import { ProjectModal } from "@/components/projects/ProjectModal";
 import { DebtSimulator } from "@/components/projects/DebtSimulator";
 import { ProcessVisualizer } from "@/components/projects/ProcessVisualizer";
 import { ComplianceInspector } from "@/components/projects/ComplianceInspector";
+import { Language, translations } from "@/lib/translations";
 
 const iconMap = {
   Sparkles,
@@ -37,21 +38,23 @@ const iconMap = {
 };
 
 interface ProjectsSectionProps {
+  language?: Language;
   onNavigateToGame?: (gameId: string) => void;
 }
 
-export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionProps) {
+export default function ProjectsSection({ language = "da", onNavigateToGame }: ProjectsSectionProps) {
+  const t = translations[language].projectsSection;
   const [selectedCategory, setSelectedCategory] = useState<string>("Alle");
   const [activeProjectDemo, setActiveProjectDemo] = useState<ProjectItem | null>(null);
 
   const categories = [
-    "Alle",
-    "Freelance & Webudvikling",
-    "FinTech & Dataanalyse",
-    "Digital Transformation",
-    "AI & Data Analytics",
-    "Legal Tech & AI",
-    "Full Stack & Web App",
+    { value: "Alle", label: t.all },
+    { value: "Freelance & Webudvikling", label: language === "da" ? "Freelance & Webudvikling" : "Freelance & Web Development" },
+    { value: "FinTech & Dataanalyse", label: language === "da" ? "FinTech & Dataanalyse" : "FinTech & Data Analysis" },
+    { value: "Digital Transformation", label: "Digital Transformation" },
+    { value: "AI & Data Analytics", label: "AI & Data Analytics" },
+    { value: "Legal Tech & AI", label: "Legal Tech & AI" },
+    { value: "Full Stack & Web App", label: "Full Stack & Web App" },
   ];
 
   const filteredProjects = useMemo(() => {
@@ -63,10 +66,10 @@ export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionPro
     <section id="projects" className="py-6 space-y-8 animate-in fade-in duration-500">
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-          Projekter & Tekniske Showcases
+          {t.title}
         </h2>
         <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-          Udforsk mine interaktive løsninger inden for FinTech, procesoptimering, AI compliance og moderne webapplikationer.
+          {t.description}
         </p>
       </div>
 
@@ -74,15 +77,15 @@ export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionPro
       <div className="flex flex-wrap items-center justify-center gap-1.5 md:gap-2">
         {categories.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={cat.value}
+            onClick={() => setSelectedCategory(cat.value)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
               selectedCategory === cat
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "bg-muted/70 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/50"
             }`}
           >
-            {cat}
+            {cat.label}
           </button>
         ))}
       </div>
@@ -99,23 +102,23 @@ export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionPro
               className="flex flex-col justify-between hover:border-primary/40 hover:shadow-lg transition-all duration-300 group"
             >
               <CardHeader className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2.5">
                     <div className="p-2 rounded-lg bg-muted/80 group-hover:bg-accent/10 transition-colors">
                       <Icon className={`w-5 h-5 ${project.iconColor}`} />
                     </div>
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    <span className="min-w-0 text-xs font-semibold text-muted-foreground uppercase tracking-wider break-words">
                       {project.category}
                     </span>
                   </div>
 
                   {isInteractiveDemo ? (
                     <Badge variant="default" className="text-xs font-semibold bg-primary/15 text-primary border-primary/30">
-                      <Play className="w-3 h-3 mr-1 fill-current" /> Interaktiv
+                      <Play className="w-3 h-3 mr-1 fill-current" /> {t.interactive}
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="text-xs font-normal">
-                      Fremhævet
+                      {t.featured}
                     </Badge>
                   )}
                 </div>
@@ -132,7 +135,7 @@ export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionPro
               <CardContent className="space-y-5">
                 {/* Highlights */}
                 <div className="space-y-1.5 bg-muted/40 p-3 rounded-lg border border-border/50 text-xs">
-                  <p className="font-semibold text-foreground/90 mb-1">Tekniske højdepunkter:</p>
+                  <p className="font-semibold text-foreground/90 mb-1">{t.highlights}</p>
                   <ul className="space-y-1 list-disc pl-4 text-muted-foreground">
                     {project.highlights.map((highlight, idx) => (
                       <li key={idx}>{highlight}</li>
@@ -193,7 +196,7 @@ export default function ProjectsSection({ onNavigateToGame }: ProjectsSectionPro
                       href={project.githubUrl || "https://github.com/NassimElH01"}
                       target="_blank"
                       rel="noopener noreferrer"
-                      title="Se kildekode på GitHub"
+                      title={t.github}
                     >
                       <Github className="w-4 h-4" />
                       <span className="hidden sm:inline">GitHub</span>
