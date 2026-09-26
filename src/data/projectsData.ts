@@ -47,8 +47,8 @@ export const projectsData: ProjectItem[] = [
       "Arbejdede med visuel præsentation, indhold og en mobilvenlig brugeroplevelse",
       "Forbandt virksomhedens serviceprofil med en mere professionel digital tilstedeværelse"
     ],
-    actionText: "Se projektprofil",
-    githubUrl: "https://github.com/NassimElH01",
+    actionText: "Besøg hjemmeside",
+    href: "https://ss.ssrengoringsservice.dk/",
     iconName: "Workflow",
     iconColor: "text-emerald-500"
   },
